@@ -1,0 +1,33 @@
+name: modules
+title: "Day 2 Operations and Automation with OpenShift Virtualization"
+version: master
+nav:
+  - modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    lab_name: "Day 2 Operations and Automation with OpenShift Virtualization"
+    release-version: master
+    page-pagination: true
+    my_var: "foo"
+    guid: my-guid
+    ssh_user: devops
+    ssh_password: devops
+    ssh_command: ssh someone@example.com
+    page-links:
+    - url: https://redhat.com
+      text: Red Hat
+    openshift_api_url: https://api.cluster-guid.guid.sandbox.opentlc.com:6443
+    openshift_cluster_ingress_domain: apps.cluster-guid.guid.sandbox.opentlc.com
+    openshift_cluster_console_url: https://console-openshift-console.apps.cluster-guid.guid.sandbox.opentlc.com
+    openshift_cluster_admin_username: username
+    openshift_cluster_admin_password: password
+    aap_controller_web_url: https://aap-aap.apps.cluster-guid.dynamic.redhatworkshops.io
+    aap_controller_admin_user: username
+    aap_controller_admin_password: password
+    codeserver_url: https://codeserver-codeserver.apps.cluster-guid.dynamic.redhatworkshops.io
+    codeserver_password: password
+    gitea_console_url: https://gitea.apps.cluster-guid.dynamic.redhatworkshops.io
+    gitea_user: user1
+    gitea_password: password
+    virt_aap_day2_workspace_revision: rh1-2025

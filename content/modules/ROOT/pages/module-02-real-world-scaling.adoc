@@ -1,0 +1,193 @@
+= Real World Scaling Scenario
+
+In this lab module we will be stepping through a scenario that is encountered by many virtualization administrators all over the world each day. We will place our systems under a high level of load, and then using the administrative tools we explored in the first module, assess and remedy the situaiton through variou methods including vertical, and horizontal scaling of resources. 
+
+== Module Setup
+
+For this part of the lab we need to make sure that the *loadmaker* application is still running in the *windows-vms* project in our Red Hat OpenShift environment.
+
+. Using the left side navigation menu click on *Workloads* followed by *Deployments*.
+. Make sure to ensure you are in Project: *windows-vms*.
+. You should see one pod deployed here called *loadmaker*.
++
+image::module-02-real-world-scaling/01-select_loadmaker.png[title="Loadmaker Deployment", link=self, window=blank, width=100%]
++
+. Click on *loadmaker* and it will bring up the *Deployment details* page.
++
+image::module-02-real-world-scaling/02-deploy_details.png[title="Deployment Details", link=self, window=blank, width=100%]
++
+. Click on *Environment*, you will see a field for *REQUESTS_PER_SECOND*, change the value in the field to `75` if it is not already set, and click the *Save* button at the bottom.
++
+image::module-02-real-world-scaling/03-lm_pod_config.png[title="LM Pod Config", link=self, window=blank, width=100%]
++
+. Now lets go check on the VMs that we are generating load against.
+. On the left side navigation menu click on *Virtualization* and then *VirtualMachines*. Select the *windows-vms* project in the center column. You should see three virtual machines: *winweb01*, *winweb02*, and *database*.
++
+image::module-02-real-world-scaling/04-windows_vms.png[title="Windows VMs", link=self, window=blank, width=100%]
++
+IMPORTANT: At this point in the lab only *database* and *winweb01* should be powered on. If they are off, please power them on now. Do not power on *winweb02* for the time being.
+
+[[vm_resource_util]]
+== Examining Resource Utilization on Virtual Machines
+
+The winweb01, winweb02, and database servers work together to provide a simple web-based application that load-balances web requests between the two web servers to reduce load and increase performance. At this time, only one webserver is up, and is now under high demand. In this lab section we will see horizontally scaling the webservers can help reduce load on the VMs, and how to diagnose this using metrics, and graphs that are native to OpenShift Virtualization.
+
+. Click on *winweb01* which should currently be running. This will bring you to the *VirtualMachine details* page.
++
+image::module-02-real-world-scaling/05-vm_details.png[title="VM Details", link=self, window=blank, width=100%]
++
+. Click on the *metrics* tab and take a quick look at the CPU utilization graph, it should be maxed out.
++
+image::module-02-real-world-scaling/06-vm_metrics.png[title="VM Metrics", link=self, window=blank, width=100%]
++
+. Click on the CPU graph itself to see an expanded version. You will notice that the load on the server is much higher than 1.0, which indicates 100% CPU utilization, and means that the webserver is severely overloaded at this time.
++
+image::module-02-real-world-scaling/07-cpu_util_load.png[title="CPU Utilization and Load", link=self, window=blank, width=100%]
+
+[[horz_scale_vm]]
+== Horizontally Scaling VM Resources
+
+. Return to the list of virtual machines by clicking on *VirtualMachines* in the left side navigation menu, and click on the *winweb02* virtual machine. Notice the VM is still in the *Stopped* state. Use the *Play* button in the upper right corner to start the virtual machine.
++
+image::module-02-real-world-scaling/08-power_on.png[title="Power On Winweb02", link=self, window=blank, width=100%]
++
+. Return to the *Metrics* tab of the *winweb01* virtual machine, and click on it's *CPU* graph again. We should see the load begin to gradually come down.
++
+image::module-02-real-world-scaling/09-load_reducing.png[title="Load Reducing", link=self, window=blank, width=100%]
++
+. Add a query to also graph the load on *winweb02* at the same time by clicking the *Add query* button, and pasting the following syntax:
++
+[source,sh,role=execute]
+----
+sum(rate(kubevirt_vmi_cpu_usage_seconds_total{name='winweb02',namespace='windows-vms'}[5m])) BY (name, namespace)
+----
++
+. Click the *Run queries* button and examine the updated graph that appears.
++
+image::module-02-real-world-scaling/10-load_sharing.png[title="Load Sharing", link=self, window=blank, width=100%]
+
+We can see by examining the graphs that *winweb02* is now under much more load than *winweb01* but over the next 5 minutes or so the load will level out and balance on the two virtual machines. 
+
+[[vert_scale_vm]]
+== Vertically Scaling VM Resources
+
+Even with the load evening out on the VM's over a 5 minute interval, we can still see that they are under fairly high load. Without the ability to scale further horizontally the only option that remains is to scale vertically by adding CPU and Memory resources to the VMs. Luckily as we explored in the previous module, this can be done by hot-plugging these resources, and not affect the workload as it's currently running. 
+
+. Start by examining the graph on the metrics page from the previous section. You can set the refresh interval to the last 5 minutes with the dropdown in the upper left corner. Note that the load on the two virtual guests is holding steady near 1.0, which signifies that both guests are still pretty overwhelmed.
++
+image::module-02-real-world-scaling/11-balanced_load.png[title="Balanced Load", link=self, window=blank, width=100%]
++
+. Navigate back to the virtual machine list by clicking on *VirtualMachines* on the left side navigation menu, and click on *winweb01*.
++
+image::module-02-real-world-scaling/12-select_vm.png[title="Select VM", link=self, window=blank, width=100%]
++
+. Click on the *Configuration* tab for the VM, and under *VirtualMachine details* find the section for *CPU|Memory* and click the pencil icon to edit.
++
+image::module-02-real-world-scaling/13-edit_vm.png[title="Edit VM", link=self, window=blank, width=100%]
++
+. Increase the vCPUs to *4* and click the *Save* button.
++
+image::module-02-real-world-scaling/14-update_specs.png[title="Update Specs", link=self, window=blank, width=100%]
++
+. Click back on the *Overview* tab. You will see that the CPU | Memory section in the details has been updated to the new value, and that the CPU utilization on the guest gradually drops quite quickly.
++
+image::module-02-real-world-scaling/15-vm_new_spec.png[title="New VM Spec", link=self, window=blank, width=100%]
++
+. Repeat these steps for *winweb02*.
+. Once both vms are upgraded, click on *windows-vms* project. You will see that the CPU usage dropped dramatically.
++
+image::module-02-real-world-scaling/16-updated_usage.png[title="Updated Utilization", link=self, window=blank, width=100%]
++
+. Click on *winweb01* and then click on the *Metrics* tab and the *CPU* graph to view how the utilization graph now looks. You can also re-add the query from *winweb02* and see that both graphs came down quite rapidly after the resources on each guest were increased, and the load on each VM is so much less than before.
++
+image::module-02-real-world-scaling/17-updated_usage_verify.png[title="Verify Metrics", link=self, window=blank, width=100%]
+
+[[swap_mem]]
+== Discussing Swap/Memory Overcommit
+
+NOTE: This section of the lab is just informative for what we may do in a scenario where we find ourselves out of physical cluster resources. Please read the following information.
+
+Some times you don't have the ability to increase CPU or memory resources to a specific workload because you have exhausted all of your physical resources. By default, OpenShift has an overcommit ratio of 10:1 for CPU, however memory in a Kubernetes environment is often a finite resource.
+
+When a normal kubernetes cluster encounters an out of memory scenario due to high workload resource utilization, it begins to kills pods indescriminately. In a container-based application environment, this is usually mitigated by having multiple replicas of an application behind a load balancer service. The application stays available served by other replicas, and the killed pod is reassigned to a node with free resources.
+
+This doesn't work that well for virtual machine workloads which in most cases are not composed of many replicas, and need to be persistently available.
+
+If you have exhausted the physical resources in your cluster the traditional option is to scale the cluster, but many times this is much easier said than done. If you don't have a spare physical node on standby to scale, and have to order new hardware, you can often be delayed by procurement procedures or supply chain disruptions.
+
+One workaround for this is to temporarily enable SWAP/Memory Overcommit on your nodes so that you can buy time until the new hardware arrives, this allows for the worker nodes to SWAP and use hard disk space to write application memory. While writing to hard disk is much much slower than writing to system memory, it does allow to preserve workloads until additional resources can arrive.
+
+[[scaling_cluster]]
+== Scaling a Cluster By Adding a Node.
+
+The primary recourse when you have run out of physical resources on the cluster is the scale the cluster by adding additional worker nodes. This can then allow for workloads that are failing or cannot be assigned to be assigned successfully. This section of the lab is dedicated to just this idea, we will overload our cluster, and then add a new node to allow all VMs to run successfully.
+
+NOTE: In this lab environment we are not actually adding an additional physical node, we are simulating the behavior by having a node on standby which is tainted to not allow VM workloads. At the appropriate time we will remove this taint, thus simulating the addition a new node to our cluster.
+
+. In the left side navigation menu, click on *Virtualization* and then *VirtalMachines*. 
+. Ensure that all VMs in *vms-aap-day2* and *windows-vms* projects are powered on. 
++
+image::module-02-real-world-scaling/18-verify_oc.png[title="Verify Running VMs", link=self, window=blank, width=100%]
++
+. Click on the *mass-vm* project to list the virtual machines there. Click on *1 - 15 of 30* drop down and change it to *50 per page* to display all of the VMs.
++
+image::module-02-real-world-scaling/19-project_mass.png[title="Mass VMs Project", link=self, window=blank, width=100%]
++
+. Click on the Check box under the *Filter* dropdown to select all VMs in the project. Click on the *Actions* button and select *Start* from the dropdown menu.
++
+image::module-02-real-world-scaling/20-select_all_start.png[title="Start All VMs", link=self, window=blank, width=100%]
++
+. Once all of the VMs attempt to power on, there should be approximently 6-7 VMs that are currently in an error state.
++
+image::module-02-real-world-scaling/21-after_start.png[title="VMs After Startup", link=self, window=blank, width=100%]
++
+. Click on the number of errors to see an explanation for the error state.
++
+image::module-02-real-world-scaling/22-num_errors.png[title="Error Details", link=self, window=blank, width=100%]
++
+. Each of these VMs will show a *ErrorUnschedulable* in the status column, because the cluster is out of resources to schedule them.
+. In the left side navigation menu, click on *Compute* then click on *Nodes*. See that three of the worker nodes (nodes 2-4) have a large number of assigned pods, and a large amount of used memory, while worker node 1 is using much less by comparison. 
++
+image::module-02-real-world-scaling/23-worker_nodes.png[title="Nodes", link=self, window=blank, width=100%]
++
+NOTE: In an OpenShift environment, the memory available is calculated based on memory requests submitted by each pod, i
+n this way the memory a pod needs is guaranteed, even if the pod is not using that amount at the time. This is why each
+ of these worker nodes are considered "full" even though they only show about 75% utilization when we look.
++
+. Click on worker node 2, you will be taken to the *Node details* page. Notice there are warnings about limited resources available on the node. You can also see the graph of memory utilization for the node, which shows the used memory in blue, and the requested amount as an orange dashed line as well.
++
+image::module-02-real-world-scaling/24-worker_node_2.png[title="Worker Node 2 Details", link=self, window=blank, width=100%]
++
+. Click on the *Pods* tab at the top, and in the search bar, type `virt-launcher` to search for VMs on the node.
++
+image::module-02-real-world-scaling/25-vms_on_node_2.png[title="VMs On Worker Node 2", link=self, window=blank, width=100%]
++
+. Now, click on *Nodes* in the left-side navigation menu, and then click on worker node 1 which will bring you to it's *Node details* page. Notice there are no CPU or Memory warnings currently on the node. 
++
+image::module-02-real-world-scaling/26-worker_node_1.png[title="Worker Node 1 Details", link=self, window=blank, width=100%]
++
+. Click on the *Pods* tab at the top, and in the search bar, type `virt-launcher` to search VMs on the node. Notice that there are currently none.
++
+image::module-02-real-world-scaling/27-vms_on_node_1.png[title="VMs On Worker Node 1", link=self, window=blank, width=100%]
++
+. Click on the *Details* tab, and scroll down until until you see the *Taints* section where there is one taint defined.
++
+image::module-02-real-world-scaling/28-node_details.png[title="Node Details", link=self, window=blank, width=100%]
++
+image::module-02-real-world-scaling/29-select_taints.png[title="Select Taints", link=self, window=blank, width=100%]
++
+. Click on the *pencil* icon to bring up a box to edit the current *Taint* on the node. When the box appears, click on the *-* next to the taint definition to remove it and click the *Save* button.
++
+image::module-02-real-world-scaling/30-remove_taint.png[title="Remove Taint", link=self, window=blank, width=100%]
++
+. Once the taint is removed, scroll back to the top and click on the *Pods* tab again and type `virt-launcher` into the search bar once more, you will see the unscheduleable VMs are being assigned to this node now.
++
+image::module-02-real-world-scaling/31-vms_node1_untainted.png[title="VMs On Worker Node 1", link=self, window=blank, width=100%]
++
+. Return to the list of VMs in the *mass-vms* project by clicking on *Virtualization* and then clicking on *VirtualMachines* in the left side navigation menu to see all of the VMs now running.
++
+image::module-02-real-world-scaling/32-mass_vms_running.png[title="Mass VMs Running", link=self, window=blank, width=100%]
+
+== Summary
+
+In this module you have worked as an OpenShift Virtulization administrator dealing with a high load scenario which you were able to remediate by horizontally and vertically scaling virtual machine resources. You also were able to solve an issue where you had run low on physical cluster resources and were unable to provision new virtual machines by scaling up your cluster to provide additional resources.

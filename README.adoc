@@ -1,0 +1,38 @@
+= Day 2 Operations and Automation with OpenShift Virtualization
+
+== Introduction
+
+*OpenShift Virtualization* enables you to bring virtual machines onto a modern, Kubernetes-based infrastructure. It enables the development and delivery of new applications as well as the modernization of existing ones and can create applications that consist of virtual machines, containers, and serverless functions - all managed together using Kubernetes-native tools and paradigms.
+
+*Ansible Automation Platform* allows platform engineering and DevOps teams to create, manage, and scale automation across physical, cloud, virtual, and edge environments. With Ansible Automation Platform, you can drive consistency and manage compliance with automated workflows that span infrastructure, network components, applications, storage, security, ITSM, and more.
+
+Together these tools can be leveraged to provide an excellent solution to host, and to ease management of all of the workloads in your data center, whether they be physical or virtual.
+
+In this lab, which is a follow-up to our very popular https://www.redhat.com/en/events/na-red-hat-openshift-virtualization[Experience OpenShift Virtualization Roadshow^], we intend to equip you with the knowledge and tools to manage your environment and perform critical operational tasks often required of virtual machine administrators from day-2 onward. This ensures that your virtualized workloads are efficiently managed and maintained long after the initial deployment.
+
+== Who Will Benefit Most from attending this Lab?
+
+*Virtual Machine Administrators* -- Those responsible for day to day management of virtual guests in OpenShift Virtualization. These users will often find themselves responsible for provisioning virtual guests, and day to day management of the guests, and the applications running within.
+
+*Virtual Infrastructure Administrators* -- Those responsible for the physical infrastructure hosting the OpenShift Virtualization solution. These users will be responsible for physical hardware, storage, and networking changes to the environment, that will affect the day to day operations of the running virtual machines.
+
+== What Content is Covered in this Lab?
+
+This lab consists of *three* main sections:
+
+* _Enabling Basic Day to Day Operations_: In this section we cover a variety of daily managment tasks that an administrator would be expected to perform in their environment, and demonstrate how many of these tasks can be automated easily with Ansible Automation Platform.
+
+* _Real World Scaling Scenario_: In this section we create a scenario that we must triage and resolve by making use of the tools and resources at our disposal within Red Hat OpenShift and OpenShift Virtualization.
+
+* _Scale to the Moon_: In this section we will wrap up by introducing some additional thought exercises and other scenarios about what types of activities we can perform with OpenShift Virtualization and Ansible Automation Platform.
+
+=== Version Information
+
+This edition of the lab has been developed using the following software versions:
+
+* Red Hat OpenShift 4.18.8
+* Red Hat OpenShift Virtualization 4.18.2
+* Red Hat Ansible Automation Platform 2.5
+
+(Accurate as of July 1, 2025)
+

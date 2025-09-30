@@ -1,0 +1,26 @@
+* xref:index.adoc[Introduction]
+
+* xref:module-01-day-to-day.adoc[Enabling Basic Day to Day Operations]
+** xref:module-01-day-to-day.adoc#dynamic_inventory[Creating a Dynamic Inventory for OpenShift Virtual Machines]
+** xref:module-01-day-to-day.adoc#sec_and_comp[Security and Compliance Using the OpenShift Compliance Operator]
+** xref:module-01-day-to-day.adoc#net_policy[Configure Network Policies to Manage VM Traffic]
+** xref:module-01-day-to-day.adoc#alerts_graphs_logs[Enable and Explore Alerts, Graphs, and Logs]
+** xref:module-01-day-to-day.adoc#vm_mgmt[Automated VM Management]
+*** xref:module-01-day-to-day.adoc#vm_mgmt_power[Stop, Start, Restart Guest VMs]
+*** xref:module-01-day-to-day.adoc#vm_mgmt_patch[Patch Guest VMs]
+*** xref:module-01-day-to-day.adoc#vm_mgmt_hp[Hot-Plugging CPU and Memory Resources]
+*** xref:module-01-day-to-day.adoc#vm_mgmt_backup[Backup and Restore Virtual Machines]
+
+* xref:module-02-real-world-scaling.adoc[Real World Scaling Scenario]
+** xref:module-02-real-world-scaling.adoc#vm_resource_util[Examining Resource Utilization on Virtual Machines]
+** xref:module-02-real-world-scaling.adoc#horz_scale_vm[Horizontally Scaling VM Resources]
+** xref:module-02-real-world-scaling.adoc#vert_scale_vm[Vertically Scaling VM Resources]
+** xref:module-02-real-world-scaling.adoc#swap_mem[Discussing Swap/Memory Overcommit]
+** xref:module-02-real-world-scaling.adoc#cluster_scale[Scaling a Cluster by Adding a Node]
+
+* xref:module-03-to-the-moon.adoc[Scale to the Moon]
+** xref:module-03-to-the-moon.adoc#ex_scenarios[Example Scenarios Created by the Lab Team]
+
+* xref:conclusion.adoc[Conclusion]
+** xref:conclusion.adoc#key_takeaways[Key Takeaways]
+** xref:conclusion.adoc#additional_info[Additional Information]

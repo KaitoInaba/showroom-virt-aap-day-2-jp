@@ -1,0 +1,26 @@
+= Scale to the Moon
+
+This lab section is designed as a discussion exercise to allow us to consider other scenarios that we could expect to encounter, and likely solve with OpenShift Virtualization, and Ansible Automation Platform.
+
+Take 5 minutes to discuss with a nearby lab mate that has also completed the lab, when you are ready to discuss, call over a proctor, and pose your idea to them.
+
+[[ex_scenarios]]
+== Example Scenarios Created by the Lab Team
+
+The team that created this lab has taken the liberty of thinking up the few scenarios listed below.
+
+=== Scenario 1
+
+Automating virtual machine deployments across multiple managed OpenShift clusters using Red Hat Advanced Cluster Management for Kubernetes, Ansible Automation Platform, GitOps, and OpenShift Virtualization.
+
+=== Scenario 2
+
+Making use of the event-driven Ansible feature in Ansible Automation Platform to collect virtual machine metrics, and then trigger automated hot-plug of resources when utilization hits certain thresholds.
+
+=== Scenario 3
+
+Enabling the cluster descheduler in OpenShift to allow workloads to automatically re-balance across the cluster when new resources are available. This would be helpful after adding a new node in our previous scaling scenario so that the overloaded nodes will live migrate VMs to the new node when added.
+
+== Summary
+
+Discuss scenarios among your lab mates, and the lab proctors. The strength of Red Hat is in open source, and the open source of community. Together we can scale Day 2 operations to the moon!
