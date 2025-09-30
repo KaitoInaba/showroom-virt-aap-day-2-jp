@@ -1,54 +1,47 @@
 image::conclusion/00_Thank_You.png[link=self, window=blank, width=100%]
 
-We hope you have enjoyed {lab_name} and learning more about *OpenShift Virtualization* and *Ansible Automation Platform* and how these two tools from Red Hat can be used to manage your virtual machine estate on a day-to-day basis, as well as how to perform some required performance analysis and troubleshooting steps as a virtualization administrator. 
-
+{lab_name} をお楽しみいただけたでしょうか。そして、*OpenShift Virtualization* と *Ansible Automation Platform*、および Red Hat のこれら 2 つのツールが、仮想化管理者として、仮想マシン資産を日常的に管理する方法、および必要なパフォーマンス分析とトラブルシューティング手順を実行する方法について、さらに学んでいただけたことを願っています。
 [[key_takeaways]]
-== Key Takeaways
+== 主なポイント
 
-* OpenShift Virtualization is solution oriented, providing you with a mature, stable, and scalable solution that's easy to get started with.
-
-* Ansible Automation Platform is an enterprise tool which provides you with the ability to automate and managed many functions of your virtual machine environment at scale.
-
+* OpenShift Virtualization はソリューション指向であり、使い始めるのが簡単な、成熟し、安定し、スケーラブルなソリューションを提供します。
+* Ansible Automation Platform は、仮想マシン環境の多くの機能を大規模に自動化および管理する機能を提供するエンタープライズツールです。
 [[additional_info]]
-== Additional Information
+== 追加情報
 
-=== Free Ebook: 15 Reasons to Adopt Red Hat OpenShift Virtualization
+=== 無料 Ebook: Red Hat OpenShift Virtualization を採用すべき 15 の理由
 
-* Discover how virtualization infrastruture continues to evolve.
-* Explore options for migration of your existing virtual machines.
-* Take advantage of a large number of benefits across your organization.
-* Learn about deploying a consistent foundation for innovation.
-* Learn how to get started through no cost demonstrations or a Virtual Migration Assessment.
-
-Click the link https://www.redhat.com/en/resources/15-reasons-adopt-openshift-virtualization-ebook[here^] to read it now.
-
-
-=== Free Ebook: Red HAt Ansible Automation Platform: A Beginners Guide
-
-* Take a brief look at Ansible Automation Platform.
-* Explore the business value of integrateing automation into your organization.
-* Learn about how Ansible Automation Platform works with various partners.
-* Explore strategies for the adoption of automated workflows.
-
-Click the link https://www.redhat.com/en/resources/ansible-automation-platform-beginners-guide-ebook[here^] to read it now.
+* 仮想化インフラストラクチャがどのように進化し続けているかを発見してください。
+* 既存の仮想マシンの移行オプションを探ってください。
+* 組織全体で多数の利点を活用してください。
+* イノベーションのための**一貫した基盤**をデプロイする方法を学んでください。
+* **無償のデモンストレーション**または**仮想移行アセスメント**を通じて開始する方法を学んでください。
+このリンク https://www.redhat.com/en/resources/15-reasons-adopt-openshift-virtualization-ebook[here^] をクリックして今すぐお読みください。
 
 
-=== Red Hat Learning Services: DO317 Managing Virtual Machines with Red Hat OpenShift Virtualization
+=== 無料 Ebook: Red Hat Ansible Automation Platform: 初心者向けガイド
 
-* Skills required to create, access, and manage VMs on OpenShift clusters.
-* Skills required to control usage and access of cpu, memory, storage, and networking resources from VMs using the same Kubernetes features that would also control usage and access to these resources for containers.
-* Sample architectures to manage High Availability (HA) of VMs using standard Kubernetes features and extensions from OpenShift Virtualization.
-* Strategies to connect VMs on OpenShift to data center services outside of their OpenShift cluster, such as storage and databases.
-* Strategies to migrate VMs from compatible hypervisors to OpenShift Virtualization by using the Migration Toolkit for Virtualization operator.
+* Ansible Automation Platform を簡単に見てみましょう。
+* 組織に自動化を統合することのビジネス価値を探ってください。
+* Ansible Automation Platform がさまざまなパートナーとどのように連携するかについて学んでください。
+* 自動化されたワークフローを採用するための戦略を探ってください。
+このリンク https://www.redhat.com/en/resources/ansible-automation-platform-beginners-guide-ebook[here^] をクリックして今すぐお読みください。
 
-Click the link https://www.redhat.com/en/services/training/managing-virtual-machines-red-hat-openshift-virtualization-exam[here^] to check it out.
 
-=== Red Hat Learning Services: AU374 Developing Advanced Auotmation with Red Hat Ansible Automation Platform
+=== Red Hat Learning Services: DO317 Red Hat OpenShift Virtualization を使用した仮想マシンの管理
 
-* Leverage capabilities of the automation content navigator to develop Ansible Playbooks.
-* Apply recommended practices for effective and efficient automation with Ansible.
-* Use advanced features of Red Hat Ansible Automation Platform to work with data, including filters and plugins.
-* Perform automation operations as rolling updates.
-* Create automation execution environments to bundle and distribute the dependencies needed to run automation code.
+* OpenShift クラスター上で VM を作成、アクセス、および管理するために必要なスキル。
+* コンテナーに対してもこれらのリソースの使用法とアクセスを制御するのと同じ Kubernetes 機能を使用して、VM からの CPU、メモリー、ストレージ、およびネットワークリソースの使用法とアクセスを制御するために必要なスキル。
+* 標準の Kubernetes 機能と OpenShift Virtualization からの拡張機能を使用した VM の高可用性 (HA) を管理するためのサンプルアーキテクチャ。
+* ストレージやデータベースなど、OpenShift クラスター外のデータセンターサービスに OpenShift 上の VM を接続するための戦略。
+* Migration Toolkit for Virtualization オペレーターを使用して、互換性のあるハイパーバイザーから OpenShift Virtualization に VM を移行するための戦略。
+このリンク https://www.redhat.com/en/services/training/managing-virtual-machines-red-hat-openshift-virtualization-exam[here^] をクリックして確認してください。
 
-Click the link https://www.redhat.com/en/services/training/au374-developing-advanced-automation-red-hat-ansible-automation-platform[here^] to check it out.
+=== Red Hat Learning Services: AU374 Red Hat Ansible Automation Platform を使用した高度な自動化の開発
+
+* 自動化コンテンツナビゲーターの機能を活用して Ansible Playbook を開発する。
+* Ansible を使用した効果的かつ効率的な自動化のための推奨プラクティスを適用する。
+* Red Hat Ansible Automation Platform の高度な機能を使用して、フィルターやプラグインなどのデータを操作する。
+* ローリングアップデートとして自動化操作を実行する。
+* 自動化コードを実行するために必要な依存関係をバンドルおよび配布するための自動化実行環境を作成する。
+このリンク https://www.redhat.com/en/services/training/au374-developing-advanced-automation-red-hat-ansible-automation-platform[here^] をクリックして確認してください。

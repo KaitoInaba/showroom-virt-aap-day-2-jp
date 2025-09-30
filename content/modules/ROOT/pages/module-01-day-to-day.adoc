@@ -1,78 +1,75 @@
-= Enabling Basic Day to Day Operations
+= 日々の基本的な操作の有効化
 
-== Credentials for the OpenShift Console and Ansible Automation Platform
+== OpenShift Console と Ansible Automation Platform の認証情報
 
-Your OpenShift cluster console is available {openshift_cluster_console_url}[here^].
+OpenShift クラスターコンソールはこちら {openshift_cluster_console_url}[here^] から利用できます。
+ローカル管理者ログインには、以下の認証情報が利用できます:
 
-Your local admin login is available with the following credentials:
+* *ユーザー:* `{openshift_cluster_admin_username}`
+* *パスワード:* `{openshift_cluster_admin_password}`
 
-* *User:* `{openshift_cluster_admin_username}`
-* *Password:* `{openshift_cluster_admin_password}`
-
-You will first see a page that asks you to choose an authenication provider, click on *htpasswd_provider*.
-
+最初に認証プロバイダーを選択する画面が表示されますので、*htpasswd_provider* をクリックしてください。
 image::module-01-day-to-day/00-htpasswd_login.png[title="OpenShift Authentication", link=self, window=blank, width=100%]
 
-You will then be presented with a login screen where you can copy/paste your credentials.
-
+その後、認証情報をコピー＆ペーストできるログイン画面が表示されます。
 image::module-01-day-to-day/01-openshift_login.png[title="OpenShift Login", link=self, window=blank, width=100%]
 
-Your Ansible Automation Platform console is available {aap_controller_web_url}[here^].
+Ansible Automation Platform コンソールはこちら {aap_controller_web_url}[here^] から利用できます。
+管理者ログインには、以下の認証情報が利用できます:
 
-Your admin login is available with the following credentials:
-
-* *User:* `{aap_controller_admin_user}`
-* *Password* `{aap_controller_admin_password}`
+* *ユーザー:* `{aap_controller_admin_user}`
+* *パスワード* `{aap_controller_admin_password}`
 
 image::module-01-day-to-day/02-aap_login.png[title="AAP Login", link=self, window=blank, width=100%]
 
-Use this opportunity to open and log into both consoles to prepare for the lab.
-
-
+この機会に両方のコンソールを開いてログインし、ラボの準備をしてください。
 [[dynamic_inventory]]
-== Creating a Dynamic Inventory for OpenShift Virtual Machines
+== OpenShift 仮想マシン向けの動的インベントリーの作成
 
-OBJECTIVE:
+目的:
 
-Dynamic inventories allow Ansible Automation Platform (AAP) to automatically fetch and update the inventory of systems from external sources, eliminating the need for manual inventory management.
+動的インベントリーを使用すると、Ansible Automation Platform (AAP) は外部ソースからシステムインベントリーを自動的に取得・更新できるため、手動でのインベントリー管理が不要になります。
+このラボでは、OpenShift Virtualization からデータを取得するための動的インベントリーを設定します。
+これにより、AAP は OCP クラスターの *vms-aap-day2* 名前空間に存在する OpenShift VM を管理できるようになります。
+=== インベントリーの作成
 
-In this lab, we will configure a dynamic inventory to pull data from OpenShift Virtualization. This will enable AAP to manage OpenShift VMs residing in the *vms-aap-day2* namespace of an OCP cluster.
-
-=== Create an Inventory
-
-. In the left-side menu, click to expand the menu for *Automation Execution*, then click on *Infrastructure*, followed by *Inventories*.
+. 左側のメニューで、*Automation Execution* のメニューをクリックして展開し、次に *Infrastructure* をクリックし、続けて *Inventories* をクリックします。
 +
 image::module-01-day-to-day/03-auto_infra_inv.png[title="Automation Execution, Infrastucture, Inventories", link=self, window=blank, width=100%]
 +
-. Click the *Create inventory* drop-down box and select the *Create inventory* option.
+. *Create inventory* ドロップダウンボックスをクリックし、*Create inventory* オプションを選択します。
 +
 image::module-01-day-to-day/04-create_inventory_dropdown.png[title="Create Inventory Dropdown", link=self, window=blank, width=100%]
 +
-. Fill out or select the appropriate value from the drop down menus available for the following fields in the *Create Inventory* form:
-   * *Name:* `OpenShift Virtual Machines`
-   * *Organization:* Default
+. *Create Inventory* フォームで、以下のフィールドに適切な値を入力するか、ドロップダウンメニューから選択します:
+   * *名前:* `OpenShift Virtual Machines`
+   * *組織:* Default
 +
-. Click the *Create inventory* button at the bottom.
+.
+下部にある *Create inventory* ボタンをクリックします。
 +
 image::module-01-day-to-day/05-create_inventory.png[title="Create Inventory", link=self, window=blank, width=100%]
 
-=== Add a Source to the Inventory
+=== インベントリーへのソースの追加
 
-. After creating the inventory, switch to the *Sources* tab.
+.
+インベントリーを作成した後、*Sources* タブに切り替えます。
 +
-. Select the *Create source* button.
+. *Create source* ボタンを選択します。
 +
 image::module-01-day-to-day/06-sources_tab.png[title="Sources Tab", link=self, window=blank, width=100%]
 +
-. Fill out or select the appropriate value from the drop down menus available for the following fields in the *Create Source* form:
-   * *Name:* OpenShift Virtual Machines Source
-   * *Execution environment:* Day 2 EE
-   * *Source:* OpenShift Virtualization
-   * *Credential:* OpenShift Credential
-   * *Update on launch Checkbox*: Checked
-   * *Cache timeout (seconds):* 0
+.
+*Create Source* フォームで、以下のフィールドに適切な値を入力するか、ドロップダウンメニューから選択します:
+   * *名前:* OpenShift Virtual Machines Source
+   * *実行環境:* Day 2 EE
+   * *ソース:* OpenShift Virtualization
+   * *認証情報:* OpenShift Credential
+   * *Update on launch チェックボックス*: チェック
+   * *キャッシュタイムアウト (秒):* 0
 +
-. Copy and paste the following YAML snippet into the *Source variables* field on the form.
+.
+以下の YAML スニペットをコピーして、フォームの *Source variables* フィールドに貼り付けます。
 +
 [source,yaml,role=execute,subs="attributes"]
 ----
@@ -80,58 +77,67 @@ namespaces:
   - vms-aap-day2
 ----
 +
-. Click the *Create source* button to save the configuration.
+.
+*Create source* ボタンをクリックして設定を保存します。
 +
 image::module-01-day-to-day/07-create_inventory_source.png[title="Create Inventory Source", link=self, window=blank, width=100%]
 
-===  Update the Inventory
-. Click the *Launch Inventory Update* button in the top-right corner to start inventory collection.
+=== インベントリーの更新
+.
+右上隅にある *Launch Inventory Update* ボタンをクリックして、インベントリー収集を開始します。
 +
 image::module-01-day-to-day/08-update_inventory.png[title="Update Inventory", link=self, window=blank, width=100%]
 +
-. Wait for the *Last Job Status* to show *Success*.
+.
+*Last Job Status* が *Success* と表示されるまで待ちます。
 +
 image::module-01-day-to-day/09-job_status_success.png[title="Job Status Success", link=self, window=blank, width=100%]
 +
-. Click on the tab for *Back to Inventory Sources*.
+.
+*Back to Inventory Sources* のタブをクリックします。
 +
 image::module-01-day-to-day/10-back_to_inventory_sources.png[title="Back to Inventory Sources", link=self, window=blank, width=100%]
 +
-. Switch to the *Hosts* tab at the top of the screen.
-. Confirm that the Virtual Machines from the *vms-app-day2* namespace of your OpenShift cluster are listed as inventory hosts.
+.
+画面上部の *Hosts* タブに切り替えます。
+.
+OpenShift クラスターの *vms-app-day2* 名前空間からの仮想マシンがインベントリーホストとしてリストされていることを確認します。
 +
 image::module-01-day-to-day/11-verify_hosts.png[title="Verify Hosts", link=self, window=blank, width=100%]
 +
-. To verify that the machines are alive we can select the three VMs we have discovered and run an automated *ping* job against them by clicking the *Run command* button.
+. マシンが動作していることを確認するため、検出された 3 つの VM を選択し、*Run command* ボタンをクリックして自動化された *ping* ジョブを実行できます。
 +
 image::module-01-day-to-day/12-run_command.png[title="Run Command", link=self, window=blank, width=100%]
 +
-. You will be presented with the *Run command* wizard with several pages:
-   * On the *Details* page, select *ping* from the *Module* dropdown menu, and click *Next*.
-   * On the *Execution Environment* page, select *Day2 EE* from the *Execution Environment* dropdown, and click *Next*.
-   * On the *Credential* page, select *Workshop Credential* from the *Credential* dropdown, and click *Next*.
-   * On the *Review* page, check over your selected options, and when you are ready click the *Finish* button.
+. *Run command* ウィザードが表示され、いくつかのページがあります:
+   * *Details* ページで、*Module* ドロップダウンメニューから *ping* を選択し、*Next* をクリックします。
+* *Execution Environment* ページで、*Execution Environment* ドロップダウンから *Day2 EE* を選択し、*Next* をクリックします。
+* *Credential* ページで、*Credential* ドロップダウンから *Workshop Credential* を選択し、*Next* をクリックします。
+* *Review* ページで、選択したオプションを確認し、準備ができたら *Finish* ボタンをクリックします。
 +
 image::module-01-day-to-day/13-review_run_command.png[title="Review Run Command", link=self, window=blank, width=100%]
 +
-. The output of running the command should be similar to the output below, including the names of each VM and their status:
+. コマンド実行の出力は、各 VM の名前とそのステータスを含む、以下の出力に類似しているはずです:
 +
 ----
-vms-aap-day2-rhel9-vm1 | SUCCESS => {
+vms-aap-day2-rhel9-vm1 |
+SUCCESS => {
     "ansible_facts": {
         "discovered_interpreter_python": "/usr/bin/python3"
     },
     "changed": false,
     "ping": "pong"
 }
-vms-aap-day2-rhel9-vm2 | SUCCESS => {
+vms-aap-day2-rhel9-vm2 |
+SUCCESS => {
     "ansible_facts": {
         "discovered_interpreter_python": "/usr/bin/python3"
     },
     "changed": false,
     "ping": "pong"
 }
-vms-aap-day2-rhel9-vm3 | SUCCESS => {
+vms-aap-day2-rhel9-vm3 |
+SUCCESS => {
     "ansible_facts": {
         "discovered_interpreter_python": "/usr/bin/python3"
     },
@@ -142,134 +148,143 @@ vms-aap-day2-rhel9-vm3 | SUCCESS => {
 +
 image::module-01-day-to-day/14-ping_success.png[title="Ping Success", link=self, window=blank, width=100%]
 +
-NOTE: You may also confirm the VMs are running in a manual manner by logging into your OpenShift console, and viewing the virtual machines there manually.
-
-=== Verifying VM Inventory in the OpenShift Console
-. Switch to your OpenShift administration console window.
-. On the left side navigation menu, click on *Virtualization* and then *VirtualMachines*.
-. Highlight the *vms-aap-day2* project in the central navigation column.
-. Confirm that the virtual machines are running.
+NOTE: OpenShift コンソールにログインし、仮想マシンを手動で確認することで、VM が実行されていることを手動で確認することもできます。
+=== OpenShift コンソールでの VM インベントリーの確認
+. OpenShift 管理コンソールウィンドウに切り替えます。
+.
+左側のナビゲーションメニューで、*Virtualization* をクリックし、次に *VirtualMachines* をクリックします。
+.
+中央のナビゲーション列で *vms-aap-day2* プロジェクトをハイライトします。
+. 仮想マシンが実行中であることを確認します。
 +
 image::module-01-day-to-day/15-vm_inventory_openshift.png[title="Virtual Machines Running on OpenShift", link=self, window=blank, width=100%]
 
 [[sec_and_comp]]
-== Security and Compliance Using the OpenShift Compliance Operator
+== OpenShift Compliance Operator を使用したセキュリティとコンプライアンス
 
-This section of our lab will focus on making use of the OpenShift Compliance Operator to configure security scans in your OpenShift cluster. The compliance operator can help ensure that the hosts in your OpenShift environment meet specific security standards, and are deployed to meet those standards.
-
+このラボのセクションでは、OpenShift Compliance Operator を使用して、OpenShift クラスターにセキュリティスキャンを設定する方法に焦点を当てます。
+コンプライアンスオペレーターは、OpenShift 環境内のホストが特定のセキュリティ標準を満たし、それらの標準を満たすようにデプロイされていることを保証するのに役立ちます。
 image::module-01-day-to-day/15a-compliance_overview.png[title="Compliance Overview", link=self, window=blank, width=100%]
 
-. Select *Operators* and then *Installed Operators* from the left side navigation menu, confirm that you have selected *All Projects* and select the *Compliance Operator*.
+. 左側のナビゲーションメニューから *Operators*、次に *Installed Operators* を選択し、*All Projects* が選択されていることを確認して *Compliance Operator* を選択します。
 +
 image::module-01-day-to-day/16-compliance_operator.png[title="Compliance Operator", link=self, window=blank, width=100%]
 +
-. This takes you to the *Operator details* page, use the horizontal scrollbar to move across and locate the *ScanSetting* tab.
+. これにより *Operator details* ページに移動しますので、横スクロールバーを使用して移動し、*ScanSetting* タブを見つけます。
 +
 image::module-01-day-to-day/17-compliance_details.png[title="Compliance Details", link=self, window=blank, width=100%]
 +
-. Click the *Create ScanSetting* button.
+. *Create ScanSetting* ボタンをクリックします。
 +
 image::module-01-day-to-day/18-scansetting_button.png[title="Create ScanSetting Button", link=self, window=blank, width=100%]
 +
-. On the *Create ScanSetting* page, set the name of the scan to `scan01`.
-Then click the *YAML view* radio button.
+.
+*Create ScanSetting* ページで、スキャンの名前を `scan01` に設定します。
+次に、*YAML view* ラジオボタンをクリックします。
 +
 image::module-01-day-to-day/19-create_scansetting.png[title="Create Scansetting", link=self, window=blank, width=100%]
 +
-. In the ScanSetting YAML details, make note of the following values that are set by default:
-  * The *autoApplyRemediations* field is set to *false*.
-  * The *roles* to be scanned by default include both *worker* and *master* nodes.
-  * The *name* field is set to *scan01* which you entered on the form view.
-. Click the *Create* button to create this simple scansetting definition.
+. ScanSetting YAML の詳細で、デフォルトで設定されている以下の値に注意してください:
+  * *autoApplyRemediations* フィールドは *false* に設定されています。
+* デフォルトでスキャンされる *roles* には、*worker* ノードと *master* ノードの両方が含まれています。
+* *name* フィールドは、フォームビューで入力した *scan01* に設定されています。
+.
+*Create* ボタンをクリックして、このシンプルな scansetting 定義を作成します。
 +
 image::module-01-day-to-day/20-scansetting_details.png[title="ScanSetting Details", link=self, window=blank, width=100%]
 +
-. Now click on the *Profile* tab where there are a number of pre-defined scanning profiles.
-. In the search box, type `rhcos4` and locate the FedRamp moderate profile *rhcos4-moderate* in the list.
+.
+次に、多数の事前定義されたスキャンプロファイルがある *Profile* タブをクリックします。
+.
+検索ボックスに `rhcos4` と入力し、リスト内の FedRamp moderate プロファイル *rhcos4-moderate* を見つけます。
 +
 image::module-01-day-to-day/21-profiles_detail.png[title="Profiles Detail", link=self, window=blank, width=100%]
 +
-. Click on *rhcos4-moderate* and then on the *YAML*.
-Scroll down the output to browse the rules that are enforced as a part of this scan.
-A quick glimpse at the side panel shows that there are quite a few of them.
+. *rhcos4-moderate* をクリックし、次に *YAML* をクリックします。
+出力を下にスクロールして、このスキャンの一部として適用されるルールを閲覧します。
+サイドパネルをちらっと見ると、かなりの数のルールがあることがわかります。
 +
 image::module-01-day-to-day/22-rhcos4_mod_rules.png[title="RHCOS4-Moderate Rules", link=self, window=blank, width=100%]
 +
-. When you are done reviewing the rules, return to the *Operator details* page by clicking your browser's _back button_ twice.
+. ルールの確認が終わったら、ブラウザの _back button_ を 2 回クリックして *Operator details* ページに戻ります。
 +
-NOTE: Additional details on the profiles available can be found https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/security_and_compliance/compliance-operator#compliance-operator-supported-profiles[here^].
+NOTE: 利用可能なプロファイルに関する追加の詳細は、https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/security_and_compliance/compliance-operator#compliance-operator-supported-profiles[こちら^] で確認できます。
 +
-. Next we want to create a *ScanSettingBinding*, pairing a *Profile* with our *ScanSetting* definition we created.
-We do this by navigating to the *Scan Setting Binding* tab, and clicking the *Create ScanSettingBinding* button.
+.
+次に、作成した *ScanSetting* 定義と *Profile* をペアリングする *ScanSettingBinding* を作成します。
+これを行うには、*Scan Setting Binding* タブに移動し、*Create ScanSettingBinding* ボタンをクリックします。
 +
 image::module-01-day-to-day/23-create_scansettingbinding.png[title="Create ScanSettingBinding", link=self, window=blank, width=100%]
 +
 . In the ScanSettingBinding YAML details, let us make a few changes:
-  * The *metadata/name* value should be set to `fedramp01`
-  * The *settingsRef/name* field is set to `scan01` which we created earlier.
-. Click the *Create* button.
+  * *metadata/name* の値を `fedramp01` に設定する必要があります。
+  * *settingsRef/name* フィールドは、以前に作成した `scan01` に設定されています。
+. *Create* ボタンをクリックします。
 +
-NOTE: The profile is set to rhcos4-moderate (the fedramp moderate profile) by default.
+NOTE: プロファイルはデフォルトで rhcos4-moderate (fedramp moderate プロファイル) に設定されています。
 +
 image::module-01-day-to-day/24-scansettingbinding_details.png[title="ScanSettingBinding Details", link=self, window=blank, width=100%]
 +
-. After the *ScanSettingBinding* is created, the fedramp01 scan will be run automatically.
-You can view this on the *Compliance Suite* tab.
+. *ScanSettingBinding* が作成されると、`fedramp01` スキャンが自動的に実行されます。
+これは *Compliance Suite* タブで確認できます。
 +
 image::module-01-day-to-day/25-compliance_suite.png[title="Compliance Suite", link=self, window=blank, width=100%]
 +
-. This Compliance Suite runs the defined scans against the specified nodes, in our case the masters and the workers defined in *scan01*.
-. You can watch as the scan proceeds through the steps of *RUNNING, AGGREGATING, and DONE* by clicking on the *Compliance Scan* tab.
+.
+この Compliance Suite は、定義されたスキャンを、今回のケースでは *scan01* で定義されたマスターノードとワーカーノードに対して実行します。
+. *Compliance Scan* タブをクリックすることで、スキャンが *RUNNING, AGGREGATING, and DONE* のステップを経て進行するのを監視できます。
 +
 image::module-01-day-to-day/26-compliance_scan.png[title="Compliance Scan", link=self, window=blank, width=100%]
 +
-. Once the scan completes (3-4 minutes on average) you can check your results by clicking on the *ComplianceCheckResult* tab.
+. スキャンが完了したら (平均 3～4 分)、*ComplianceCheckResult* タブをクリックして結果を確認できます。
 +
-. Change the search bar to *Label* and apply the following labels:
+. 検索バーを *Label* に変更し、以下のラベルを適用します:
   * `compliance.openshift.io/check-status=FAIL`
   * `compliance.openshift.io/check-severity=high`
 +
 image::module-01-day-to-day/27-compliance_check_results.png[title="Compliance Check Results", link=self, window=blank, width=100%]
 +
-. Twelve high severity checks have a failed status:
+.
+12 個の高 severity のチェックが *Failed* ステータスになっています:
 
 |===
 | *ComplianceCheckResult* | *Check-Severity* | *Check-Status*
 | rhcos4-moderate-master-configure-crypto-policy| high| FAIL
 | rhcos4-moderate-master-coreos-pti-kernel-argument| high| FAIL
-| rhcos4-moderate-master-disable-ctrlaltdel-burstaction| high| FAIL
+| rhcos4-moderate-master-disable-ctrlaltdel-burstaction|
+high| FAIL
 | rhcos4-moderate-master-disable-ctrlaltdel-reboot| high| FAIL
 | rhcos4-moderate-master-enable-fips-mode| high| FAIL
 | rhcos4-moderate-master-no-empty-passwords| high| FAIL
 | rhcos4-moderate-worker-configure-crypto-policy| high| FAIL
 | rhcos4-moderate-worker-coreos-pti-kernel-argument| high| FAIL
 | rhcos4-moderate-worker-disable-ctrlaltdel-burstaction| high| FAIL
-| rhcos4-moderate-worker-disable-ctrlaltdel-reboot| high| FAIL
+|
+rhcos4-moderate-worker-disable-ctrlaltdel-reboot| high| FAIL
 | rhcos4-moderate-worker-enable-fips-mode| high| FAIL
 | rhcos4-moderate-worker-no-empty-passwords| high| FAIL
 |===
 
-You have now completed this section on configuring and running compliance scans against your OpenShift cluster.
-
+これで、OpenShift クラスターに対してコンプライアンススキャンを設定および実行するこのセクションを完了しました。
 [[net_policy]]
-== Configure Network Policies to Manage VM Traffic
+== VM トラフィックを管理するためのネットワークポリシーの設定
 
-In Red Hat OpenShift administrators can configure Network Policies to further secure their environments, and the virtual guests that run there.
-In this portion of the lab we are going to configure a virtual machine and then apply a network policy that prevents its egress to the world.
+Red Hat OpenShift では、管理者はネットワークポリシーを設定して、環境、およびそこで実行される仮想ゲストをさらに保護できます。
+このラボのこの部分では、仮想マシンを設定し、そのマシンから外部へのエグレスを禁止するネットワークポリシーを適用します。
+=== 仮想マシンでのネットワークエグレスの確認
 
-=== Confirm Network Egress on Virtual Machines
-
-. On the left side navigation menu, click on *Virtualization* then click *VirtualMachines*, and select the *rhel9-vm1* virtual machine under the *vms-aap-day2* project in the center column.
+. 左側のナビゲーションメニューで、*Virtualization*、次に *VirtualMachines* をクリックし、中央の列で *vms-aap-day2* プロジェクトの下にある *rhel9-vm1* 仮想マシンを選択します。
 +
 image::module-01-day-to-day/28-view_vm.png[title="View VM", link=self, window=blank, width=100%]
 +
-. Click on the *Console* tab and use the provided credentials, and the built in copy/paste functionality to authenticate to the VM.
+. *Console* タブをクリックし、提供された認証情報と組み込みのコピー/ペースト機能を使用して VM に認証します。
 +
 image::module-01-day-to-day/29-login_vm.png[title="Login to VM", link=self, window=blank, width=100%]
 +
-NOTE: You may see a popup that asks you to enable the copy/paste functionality. If prompted click *Allow*.
+NOTE: コピー/ペースト機能を有効にするように求めるポップアップが表示される場合があります。
+プロンプトが表示されたら *Allow* をクリックします。
 +
-. Once you are logged in, execute the following command to start an outward bound ping to Google:
+. ログインしたら、以下のコマンドを実行して Google へのアウトバウンド ping を開始します:
 +
 [source,sh,role=execute]
 ----
@@ -278,51 +293,60 @@ ping www.google.com
 +
 image::module-01-day-to-day/30-ping_site.png[title="Ping Google", link=self, window=blank, width=100%]
 +
-. Press *Control+C* to stop the ping.
+.
+*Control+C* を押して ping を停止します。
 +
-. From the left side navigation menu, click on *Workloads* and then *Pods*, and then click on the virt-launcher pod for the one that represents the VM *rhel9-vm1* to view the pod details.
+. 左側のナビゲーションメニューから *Workloads*、次に *Pods* をクリックし、VM *rhel9-vm1* を表す `virt-launcher` Pod をクリックして Pod の詳細を表示します。
 +
 image::module-01-day-to-day/31-select_pod.png[title="Select Pod", link=self, window=blank, width=100%]
 +
-NOTE: Pod names are randomly generated, so yours will most likely not match the screenshot above.
+NOTE: Pod 名はランダムに生成されるため、ご自身の Pod 名は上記のスクリーンショットと一致しない可能性が高いです。
 +
-. On the *Pod details* page, click the *Edit* option on the *Labels* section.
+. *Pod details* ページで、*Labels* セクションの *Edit* オプションをクリックします。
 +
 image::module-01-day-to-day/32-pod_details.png[title="Edit Pod Details", link=self, window=blank, width=100%]
 +
-. An *Edit labels* window will appear, you can click into the center box and add a label for `app=network-policy-deny`, press the *Enter* key to commit it, and then click the *Save* button.
+.
+*Edit labels* ウィンドウが表示されます。中央のボックスをクリックし、`app=network-policy-deny` のラベルを追加し、*Enter* キーを押してコミットしてから、*Save* ボタンをクリックします。
 +
 image::module-01-day-to-day/33-pod_labels.png[title="Edit Pod Labels", link=self, window=blank, width=100%]
 +
-. Repeat the same process for the *rhel9-vm2* virtual machine.
+. *rhel9-vm2* 仮想マシンについても同じプロセスを繰り返します。
 
-=== Create the Network Policy
+=== ネットワークポリシーの作成
 
-. From the left side navigation menu, click on *Networking* and then click on *NetworkPolicies*, then click on the *Create NetworkPolicy* button in the center of the screen.
+.
+左側のナビゲーションメニューから *Networking*、次に *NetworkPolicies* をクリックし、画面中央の *Create NetworkPolicy* ボタンをクリックします。
 +
 image::module-01-day-to-day/34-network_policy.png[title="Network Policy", link=self, window=blank, width=100%]
 +
-. In *NetworkPolicies* fill out the following fields:
+. *NetworkPolicies* で、以下のフィールドに入力します:
   * *Policy name*: `ping-egress-deny`
   * *Key*: `app`
   * *Value*: `network-policy-deny`
-  * *Deny all egress traffic checkbox*: checked
+  * *Deny all egress traffic checkbox*: チェック
 +
 image::module-01-day-to-day/35-network_policy_configure.png[title="Configure Network Policy", link=self, window=blank, width=100%]
 +
-. With the values filled out, you can click the *affected pods* link under the *Pod selector* section to show which pods are affected by this policy.
-Once you are satisfied with your settings you can click the *Create* button.
+.
+値が入力されたら、*Pod selector* セクションの下にある *affected pods* リンクをクリックして、このポリシーの影響を受ける Pod を表示できます。
+設定に問題がなければ、*Create* ボタンをクリックします。
 +
 image::module-01-day-to-day/36-affected_pods.png[title="Affected Pods", link=self, window=blank, width=100%]
 +
-. With the policy created, go test it out.
+.
+ポリシーが作成されたので、テストしてみましょう。
 
-=== Confirm the Effects of the Network Policy on the VM.
+=== VM でのネットワークポリシーの効果の確認
 
-. Return to the console of the *rhel9-vm1* virtual machine to test our policy.
-. Using the left side navigation menu, click on *Virtualization*, then *VirtualMachines*, and select *rhel9-vm1* from the center column.
-. Click the *Console* tab of the VM, you should still be logged in from before.
-. Copy and paste the following syntax to test out the new Network Policy:
+.
+*rhel9-vm1* 仮想マシンのコンソールに戻って、ポリシーをテストします。
+.
+左側のナビゲーションメニューを使用して、*Virtualization*、次に *VirtualMachines* をクリックし、中央の列から *rhel9-vm1* を選択します。
+.
+VM の *Console* タブをクリックします。まだログインしているはずです。
+.
+以下の構文をコピー＆ペーストして、新しいネットワークポリシーをテストします:
 +
 [source,sh,role=execute]
 ----
@@ -331,158 +355,169 @@ ping www.google.com
 +
 image::module-01-day-to-day/37-ping_site_deny.png[title="Egress Blocked", link=self, window=blank, width=100%]
 +
-. Egress from the cluster is completely blocked, including DNS lookups.
-. Once you have completed this exercise, return to *Networking* and *NetworkPolicies* and delete the *ping-egress-deny* policy using the three-dot menu on the right, and confirming in the popup box.
+.
+DNS ルックアップを含め、クラスターからのエグレスが完全にブロックされました。
+.
+この演習を完了したら、*Networking* と *NetworkPolicies* に戻り、右側の 3 点メニューを使用して *ping-egress-deny* ポリシーを削除し、ポップアップボックスで確認します。
 +
 image::module-01-day-to-day/38-delete_policy.png[title="Delete Policy", link=self, window=blank, width=100%]
 
-In this section we learned how to apply a simple network policy to block egress traffic from a virtual machine to a public website.
-While this is a very simple example and application of this function, network policies are quite feature rich and very tuneable.
-In an advanced example, they can allow you to implement microsegmentation policies helping to shape the traffic flow both inside and outside of your cluster, between virtual guests in different or even the same OpenShift project.
-
+このセクションでは、仮想マシンからパブリック Web サイトへのエグレストラフィックをブロックするシンプルなネットワークポリシーを適用する方法を学びました。
+これは非常にシンプルな例とこの機能の適用ですが、ネットワークポリシーは非常に機能が豊富で調整可能です。
+より高度な例では、マイクロセグメンテーションポリシーを実装して、クラスターの内部と外部、異なる OpenShift プロジェクトまたは同じ OpenShift プロジェクト内の仮想ゲスト間のトラフィックフローを形成するのに役立ちます。
 [[alerts_graphs_logs]]
-== Enable and Explore Alerts, Graphs, and Logs
+== アラート、グラフ、ログの有効化と探索
 
-Another important task for administrators is often to be able to assess cluster performance. These performance metrics can be gathered from the nodes themselves, or the workloads that are running within the cluster. OpenShift has a number of built-in tools that assist with generating alerts, aggregating logs, and producing graphs that can help an administrator visualize the performance of their cluster.
+管理者にとってのもう一つの重要なタスクは、多くの場合、クラスターのパフォーマンスを評価できることです。
+これらのパフォーマンスメトリックは、ノード自体、またはクラスター内で実行されているワークロードから収集できます。
+OpenShift には、アラートの生成、ログの集約、および管理者がクラスターのパフォーマンスを視覚化するのに役立つグラフの生成を支援する組み込みツールが多数あります。
+=== ノードのアラートとグラフ
 
-=== Node Alerts and Graphs
+まず、クラスターを構成するノードのメトリックを見てみましょう。
 
-To begin, lets look at the metrics for the nodes that make up our cluster.
-
-. On the left side navigation menut click on *Compute*, and then click on *Nodes*.
-. From the *Nodes* page, you can se each node in your cluster, their status, role, the number of pods they are currently hosting, and physical attributes like memory and cpu utilization.
+.
+左側のナビゲーションメニューで *Compute*、次に *Nodes* をクリックします。
+.
+*Nodes* ページから、クラスター内の各ノード、そのステータス、ロール、現在ホストしている Pod の数、およびメモリと CPU の使用率などの物理属性を確認できます。
 +
 image::module-01-day-to-day/39-node_list.png[title="Nodes", link=self, window=blank, width=100%]
 +
-. Click on your worker node 4 in your cluster. The *Node details* page comes up where you can see more detailed information about the node.
-. The page shows alerts that are being generated by the node at the top-center of the screen, and provides graphs to help visualize the utilization of the node by displaying CPU, Memory, Storage, and Network Throughput graphs at the bottom-center of the screen.
-. You can change the review period for these graphs to periods of 1, 6, or 24 hours by clicking on the dropdown at the top-right of the utilization panel.
+. クラスター内のワーカーノード 4 をクリックします。
+*Node details* ページが表示され、ノードに関するより詳細な情報が表示されます。
+.
+このページには、画面上部中央にノードによって生成されているアラートが表示され、画面下部中央に CPU、メモリ、ストレージ、ネットワークスループットのグラフを表示することで、ノードの使用率を視覚化するのに役立つグラフが提供されます。
+. 利用率パネルの右上隅にあるドロップダウンをクリックすることで、これらのグラフのレビュー期間を 1、6、または 24 時間に変更できます。
 +
 image::module-01-day-to-day/40-node_example.png[title="Node Details", link=self, window=blank, width=100%]
 
 
-=== Virtual Machine Graphs
+=== 仮想マシンのグラフ
 
-Outside of the physical cluster resources, it's also very important to be able to visualize what's going on with our applications and workloads like virtual machines. Lets examine the information we can find out about these.
-
-NOTE: For this part of the lab, we are going to use an application to generate additional load on some of our virtual machines so that we can see how graphs are generated.
-
-. Using the left side navigation menu click on *Workloads* followed by *Deployments*.
-. Make sure to ensure you are in Project: *windows-vms*.
-. You should see one pod deployed here called *loadmaker*.
+物理クラスターリソース以外に、アプリケーションや仮想マシンなどのワークロードで何が起こっているかを視覚化できることも非常に重要です。
+それらについて見つけることができる情報を調べてみましょう。
+NOTE: このラボのこの部分では、グラフがどのように生成されるかを確認できるように、仮想マシンの一部に追加の負荷を生成するためにアプリケーションを使用します。
+. 左側のナビゲーションメニューを使用して *Workloads*、次に *Deployments* をクリックします。
+.
+プロジェクト: *windows-vms* にいることを確認してください。
+. ここにデプロイされた Pod が 1 つ表示されるはずです。これは *loadmaker* と呼ばれます。
 +
 image::module-01-day-to-day/41-select_loadmaker.png[title="Loadmaker Deployment", link=self, window=blank, width=100%]
 +
-. Click on *loadmaker* and it will bring up the *Deployment details* page.
+. *loadmaker* をクリックすると、*Deployment details* ページが表示されます。
 +
 image::module-01-day-to-day/42-deploy_details.png[title="Deployment Details", link=self, window=blank, width=100%]
 +
-. Click on *Environment*, you will see a field for *REQUESTS_PER_SECOND*, change the value in the field to `75` and click the *Save* button at the bottom.
+. *Environment* をクリックすると、*REQUESTS_PER_SECOND* のフィールドが表示されます。このフィールドの値を `75` に変更し、下部の *Save* ボタンをクリックします。
 +
 image::module-01-day-to-day/43-lm_pod_config.png[title="LM Pod Config", link=self, window=blank, width=100%]
 +
-. Now lets go check on the VM's that we are generating load against.
-. On the left side navigation menu click on *Virtualization* and then *VirtualMachines*. Select the *windows-vms* project in the center column. You should see three virtual machines: *winweb01*, *winweb02*, and *database*.
+. さて、負荷を生成している VM を確認しに行きましょう。
+.
+左側のナビゲーションメニューで *Virtualization*、次に *VirtualMachines* をクリックします。中央の列で *windows-vms* プロジェクトを選択します。
+3 つの仮想マシンが表示されるはずです: *winweb01*、*winweb02*、および *database*。
 +
 image::module-01-day-to-day/44-windows_vms.png[title="Windows VMs", link=self, window=blank, width=100%]
 +
-IMPORTANT: At this point in the lab only *database* and *winweb01* should be powered on. If they are off, please power them on now. Do not power on *winweb02* for the time being.
+重要: このラボの時点では、*database* と *winweb01* のみが電源オンになっているはずです。
+もしオフになっている場合は、今すぐ電源をオンにしてください。*winweb02* は当面電源をオンにしないでください。
 +
-. Once the virtual machines are running, click on *winweb01*. This will bring you to the *VirtualMachine details* page.
-. On this page there is a  a *Utilization* section that shows the following information:
-  * The basic status of the VM resources (cpu, memory, storage, and network transfer) which are updated every 15 seconds.
-  * A number of small graphs which detail the VM performance over a recent time period, by default this is the last 5 minutes, but we can select a value up to 1 week from the drop down menu.
+.
+仮想マシンが実行されたら、*winweb01* をクリックします。これにより *VirtualMachine details* ページが表示されます。
+.
+このページには *Utilization* セクションがあり、以下の情報が表示されます:
+  * VM リソース (CPU、メモリ、ストレージ、ネットワーク転送) の基本的なステータス。これは 15 秒ごとに更新されます。
+* 最近の期間の VM パフォーマンスを詳述するいくつかの小さなグラフ。デフォルトでは過去 5 分ですが、ドロップダウンメニューから最大 1 週間までの値を選択できます。
 +
 image::module-01-day-to-day/45-vm_details.png[title="VM Details", link=self, window=blank, width=100%]
 +
-. Taking a closer look at *Network Transfer* by clicking on *Breakdown by network* you can see how much network traffic is passing through each network adapter assigned to the virtual machine. In this case, the one *default* network adapter.
+. *Breakdown by network* をクリックして *Network Transfer* を詳しく見ると、仮想マシンに割り当てられた各ネットワークアダプターを通過しているネットワークトラフィックの量を確認できます。
+この場合、1 つの *default* ネットワークアダプターです。
 +
 image::module-01-day-to-day/46-select_network.png[title="Select Network", link=self, window=blank, width=100%]
 +
-. When you are done looking at the network adapter, click on the graph showing CPU utilization.
+.
+ネットワークアダプターの確認が終わったら、CPU 使用率を示すグラフをクリックします。
 +
 image::module-01-day-to-day/47-select_cpu.png[title="Select CPU", link=self, window=blank, width=100%]
 +
-. This will launch the *Metrics* window which will allow you to see more details about the CPU utilization. By default this is set to 30 minutes, but you can click on the drop down and change that to 1 hour to see the spike in the graph once we turned on the load generator.
+. これにより *Metrics* ウィンドウが起動し、CPU 使用率に関する詳細を確認できます。
+デフォルトでは 30 分に設定されていますが、ドロップダウンをクリックして 1 時間に変更すると、ロードジェネレーターをオンにした後のグラフのスパイクを確認できます。
 +
 image::module-01-day-to-day/48-cpu_metrics.png[title="CPU Metrics", link=self, window=blank, width=100%]
 +
-. You can also modify the refresh timing in the upper right corner.
+. 右上隅で更新タイミングを変更することもできます。
 +
 image::module-01-day-to-day/49-change_refresh.png[title="Change Refresh Interval", link=self, window=blank, width=100%]
 +
-. You can also see the query that is being run against the VM in order to generate this graph, and create your own using the *Add Query* button.
+. また、このグラフを生成するために VM に対して実行されているクエリを確認したり、*Add Query* ボタンを使用して独自のクエリを作成したりすることもできます。
 +
 image::module-01-day-to-day/50-add_query.png[title="Add_Query", link=self, window=blank, width=100%]
 +
-. As an exercise, lets add a custom query that will show the amount of vCPU time spent in IO/wait status.
-. Click the *Add Query* button, and on the new line that appears, paste the following query:
+. 演習として、IO/wait ステータスで費やされた vCPU 時間の量を示すカスタムクエリを追加してみましょう。
+. *Add Query* ボタンをクリックし、表示された新しい行に以下のクエリを貼り付けます:
 +
 [source,sh,role=execute]
 ----
 sum(rate(kubevirt_vmi_vcpu_wait_seconds_total{name='winweb01',namespace='windows-vms'}[5m])) BY (name, namespace)
 ----
 +
-. Click the *Run queries* button and see how the graph updates. A new line graph will appear showing that the vCPU on the guest is never not under load.
+.
+*Run queries* ボタンをクリックして、グラフがどのように更新されるかを確認します。
+ゲスト上の vCPU が常に負荷がかかっていることを示す新しい折れ線グラフが表示されます。
 +
 image::module-01-day-to-day/51-example_query.png[title="Sample Custom Query", link=self, window=blank, width=100%]
 
-=== Examining Dashboards
+=== ダッシュボードの確認
 
-Another powerful feature of OpenShift is being able to use the *Cluster Observability Operator* to display detailed dashboards of cluster performance. Lets check some of those out now.
+OpenShift のもう 1 つの強力な機能は、*Cluster Observability Operator* を使用して、クラスターのパフォーマンスの詳細なダッシュボードを表示できることです。
+それらのいくつかを見てみましょう。
 
-. From the left side navigation menu, click on *Observe*, and then *Dashboards*.
+. 左側のナビゲーションメニューから *Observe*、次に *Dashboards* をクリックします。
 +
 image::module-01-day-to-day/52-dashboards.png[title="Dashboards", link=self, window=blank, width=100%]
 +
-. Click on *API Performance* and search for *KubeVirt/Infrastructure Resources/Top Consumers*
+. *API Performance* をクリックし、*KubeVirt/Infrastructure Resources/Top Consumers* を検索します。
 +
 image::module-01-day-to-day/53-kubevirt_dashboard.png[title="KubeVirt Dashboard", link=self, window=blank, width=100%]
 +
-. This dashboard will display the top consumers for all of the virtual machines running on your cluster. Look at the *Top Consumers of CPU by virt-launcher Pods* panel and click the *Inspect* link in the upper right corner.
+.
+このダッシュボードには、クラスターで実行されているすべての仮想マシンのトップコンシューマーが表示されます。
+*Top Consumers of CPU by virt-launcher Pods* パネルを見て、右上隅の *Inspect* リンクをクリックします。
 +
 image::module-01-day-to-day/54-cpu_inspect.png[title="CPU Inspect", link=self, window=blank, width=100%]
 +
-. You can can select the VMs you want to see in the graph by checking the boxes next to each VM displayed.
-. Try it now by turning some of the lines off. The associated colored line will disappear from the graph when disabled.
+. 表示されている各 VM の横にあるチェックボックスをオンにすることで、グラフで表示したい VM を選択できます。
+. 今すぐ試して、いくつかの線をオフにしてみてください。
+無効にすると、関連する色付きの線がグラフから消えます。
 +
 image::module-01-day-to-day/55-metrics_select.png[title="Select Metrics", link=self, window=blank, width=100%]
 
-Now that we have completed this section determining how to locate and display alerts, performance metrics, and graphs about our nodes and workloads, we can leverage these skills in the future in order to troubleshoot our own OpenShift Virtualization environments.
-
+これで、ノードとワークロードに関するアラート、パフォーマンスメトリック、およびグラフを見つけて表示する方法を決定するこのセクションを完了しました。将来的には、これらのスキルを活用して、独自の OpenShift Virtualization 環境をトラブルシューティングできます。
 [[vm_mgmt_power]]
-== Automated VM Management
+== 仮想マシンの自動化された管理
 
-=== Stop, Start, Restart Guest VMs
+=== ゲスト VM の停止、起動、再起動
 
-Now that we've spent some time working with the OpenShift console, lets see what types of activities we can automate to make our administration jobs easier.
+OpenShift コンソールでの作業に時間を費やしたので、管理作業を容易にするためにどのような種類のアクティビティを自動化できるかを見てみましょう。
+このセクションでは、Ansible Automation Platform (AAP) を使用して、Red Hat OpenShift Virtualization で実行されているゲスト VM のライフサイクルを管理する方法を学びます。
+プレイブックや VM タスクファイルの作成などの多くの準備作業はすでに完了していますが、このラボのセクションでは、各部分がどのように連携するか、および AAP 経由で自動化を実行する方法を理解することに焦点を当てます。
+まず、特定の名前空間内のすべての VM の停止、起動、再起動など、一般的な VM ライフサイクルアクションを実行します。
+これらのタスクは、これらのアクションの背後にある自動化がどのように構造化されているかを示すように設計されています。
+=== 既存のセットアップ
 
-In this section, you'll learn how to manage the lifecycle of your guest VMs running in Red Hat OpenShift Virtualization using Ansible Automation
-Platform (AAP).
+エクスペリエンスを支援するために、以下のコンテンツがすでに作成および設定されています:
 
-While much of the groundwork, such as creating playbooks and VM task files, has already been completed for you, this section of the lab will focus on understanding how the pieces work together and how to run the automation via AAP.
+* *tasks/main.yml* ファイルには、動的なタスクインクルージョンロジックが事前に入力されています。
+* 入力変数に基づいて適切なタスクを呼び出す Ansible プレイブック (*manage_vm_playbook.yml*) がすでに配置されています。
+* VM を停止、起動、再起動するための個々のタスクファイル (*stop_vm.yml*、*start_vm.yml*、および *restart_vm.yml*) が事前に作成されています。
+これらのファイルを作成または変更する必要はありませんが、Ansible Automation Platform でジョブテンプレートを作成するときに参照するため、それらがどのように機能するかを理解することが重要です。
+=== タスクファイルの理解
 
-To begin, we’ll perform some common VM lifecycle actions such as stopping, starting, and restarting all VMs in a given namespace. These tasks are designed to demonstrate how the automation behind these actions is structured.
-
-=== The Existing Setup
-
-To assist with your experience, the following content has already been created and configured for you:
-
-* The *tasks/main.yml* file has been pre-populated with dynamic task inclusion logic.
-* The Ansible playbook (*manage_vm_playbook.yml*) that calls the appropriate task based on input variables is already in place.
-* Individual task files for stopping, starting, and restarting VMs (*stop_vm.yml*, *start_vm.yml*, and *restart_vm.yml*) have been pre-written.
-
-Although you don’t need to create or modify these files, it's important to understand how they work, as you’ll be referencing them when creating job templates in Ansible Automation Platform.
-
-=== Understanding the Task Files
-
-Each of the task files works by retrieving all virtual machines within a specific namespace (in our case *vms-aap-day2*), and then performing an action (stop, start, restart) based on their current status.
-The *ansible.builtin.debug* task provides insights to understanding the structure of your VM resource *vm_info* to identify key fields required to create dynamic Ansible tasks.
-
+各タスクファイルは、特定の名前空間 (今回のケースでは *vms-aap-day2*) 内のすべての仮想マシンを取得し、現在のステータスに基づいてアクション (停止、起動、再起動) を実行することで機能します。
+*ansible.builtin.debug* タスクは、動的な Ansible タスクを作成するために必要な主要なフィールドを特定するために、VM リソース *vm_info* の構造を理解するための洞察を提供します。
 === stop_vm.yml
 
-This task file stops any VMs that are currently running within a given namespace.
-
+このタスクファイルは、特定の名前空間内で現在実行中の VM を停止します。
 [source,yaml]
 ----
 ---
@@ -507,13 +542,13 @@ This task file stops any VMs that are currently running within a given namespace
   loop: "{{ vm_info.resources }}"
   loop_control:
     label: "{{ item.metadata.name }}"
+ 
   changed_when: item.status.printableStatus != "Stopped"
 ----
 
 === start_vm.yml
 
-This task file starts any VMs that are currently stopped within a given namespace.
-
+このタスクファイルは、特定の名前空間内で現在停止している VM を起動します。
 [source,yaml]
 ----
 ---
@@ -538,13 +573,13 @@ This task file starts any VMs that are currently stopped within a given namespac
   loop: "{{ vm_info.resources }}"
   loop_control:
     label: "{{ item.metadata.name }}"
+ 
   changed_when: item.status.printableStatus != "Running"
 ----
 
 === restart_vm.yml
 
-This task file restarts any VMs that are currently running within a given namespace.
-
+このタスクファイルは、特定の名前空間内で現在実行中の VM を再起動します。
 [source,yaml]
 ----
 ---
@@ -569,21 +604,20 @@ This task file restarts any VMs that are currently running within a given namesp
   loop: "{{ vm_info.resources }}"
   loop_control:
     label: "{{ item.metadata.name }}"
+ 
   changed_when: item.status.printableStatus != "Running"
 ----
 
-These task files interact with the OpenShift REST API directly using the *ansible.builtin.uri* module to invoke the appropriate lifecycle action of stopping, starting, or restarting the virtual machine.
+これらのタスクファイルは、*ansible.builtin.uri* モジュールを使用して OpenShift REST API と直接対話し、仮想マシンの停止、起動、または再起動の適切なライフサイクルアクションを呼び出します。
+さらに、デバッグタスクは、*kubevirt_vm_info* モジュールによって返される VM データの構造を視覚化するのに役立ち、次のように内訳されます:
 
-In addition, the debug task helps you to visualize the structure of VM data returned by the *kubevirt_vm_info* module and breaks down as follows:
-
-* The *kubevirt_vm_info* module retrieves all VMs in the namespace.
-* *metadata.name*: The name of the VirtualMachine.
-* *metadata.namespace*: The namespace the VM belongs to.
-* The *loop_control* option sets a label for each task iteration, showing the VM name (*item.metadata.name*) in the output. This makes the playbook output more readable and easier to debug.
-* *status.printableStatus*: The current status of the VM (e.g., Stop, Start,Restart).
-
-A snippet sample of the *ansible.builtin.debug* module is shown below.
-
+* *kubevirt_vm_info* モジュールは、名前空間内のすべての VM を取得します。
+* *metadata.name*: VirtualMachine の名前。
+* *metadata.namespace*: VM が属する名前空間。
+* *loop_control* オプションは、各タスクの反復にラベルを設定し、出力に VM 名 (*item.metadata.name*) を表示します。
+これにより、プレイブックの出力が読みやすく、デバッグしやすくなります。
+* *status.printableStatus*: VM の現在のステータス (例: Stop、Start、Restart)。
+*ansible.builtin.debug* モジュールのスニペット例を以下に示します。
 [source,yaml]
 ----
 changed: true
@@ -605,117 +639,143 @@ result:
   ...
 ----
 
-=== Creating and Running the VM Job Templates with Ansible Automation Platform
+=== Ansible Automation Platform を使用した VM ジョブテンプレートの作成と実行
 
-Each VM lifecycle template that you will create takes advantage of the *manage_vm_playbook.yml*.
+作成する各 VM ライフサイクルテンプレートは、*manage_vm_playbook.yml* を利用します。
+このセクションでは、Ansible Automation Platform (AAP) ダッシュボードを使用して、シナリオごとに VM ジョブテンプレートを作成します: VM の起動、VM の停止、VM の再起動。
+OpenShift コンソールに戻って確認することで、自動化ジョブの効果を確認できます。
 
-In this section, you will make use of the Ansible Automation Platform (AAP) dashboard and create a VM Job Template for each scenario: Start VMs, Stop VMs, and Restart VMs. You will be able to see the effects of your automation jobs by checking back with the OpenShift console.
-
-. In the OpenShift console, use the left side navigation menu and click on *Virtualization* and then *VirtualMachines*. In the center column, click on the *vms-aap-day2* project and verify that all three VMs are currently running.
+.
+OpenShift コンソールで、左側のナビゲーションメニューを使用して *Virtualization*、次に *VirtualMachines* をクリックします。
+中央の列で *vms-aap-day2* プロジェクトをクリックし、3 つすべての VM が現在実行中であることを確認します。
 +
 image::module-01-day-to-day/55a-running_vms.png[title="Running AAP VMs", link=self, window=blank, width=100%]
 +
-. Return to the tab where you have Ansible Automation Platform open. If your previous login has timed out, or you have accidentally closed the window, the information to login again is here:
+. Ansible Automation Platform を開いているタブに戻ります。
+以前のログインがタイムアウトした場合、または誤ってウィンドウを閉じた場合は、再度ログインするための情報がここにあります:
 +
-Your Ansible Automation Platform console is available {aap_controller_web_url}[here^].
+Ansible Automation Platform コンソールはこちら {aap_controller_web_url}[here^] から利用できます。
+管理者ログインには、以下の認証情報が利用できます:
 
-Your admin login is available with the following credentials:
-
-* *User:* `{aap_controller_admin_user}`
-* *Password* `{aap_controller_admin_password}`
+* *ユーザー:* `{aap_controller_admin_user}`
+* *パスワード* `{aap_controller_admin_password}`
 +
-. Within the AAP UI dashboard, use the left side menu to navigate to *Automation Execution* then click on *Templates*. On the templates screen, click the *Create template* button, and chose *Create job template* from the dropdown menu.
+.
+AAP UI ダッシュボード内で、左側のメニューを使用して *Automation Execution* に移動し、次に *Templates* をクリックします。
+テンプレート画面で、*Create template* ボタンをクリックし、ドロップダウンメニューから *Create job template* を選択します。
 +
 image::module-01-day-to-day/56-create_job_template.png[title="Create Job Template", link=self, window=blank, width=100%]
 +
-. Fill out the following details on the *Create job template* page:
+. *Create job template* ページで、以下の詳細を入力します:
 +
 |===
-| Parameter         | Value
+|
+パラメーター         | 値
 
-| Name          | `Stop VMs`
-| Job Type      | Run
-| Inventory     | OpenShift Virtual Machines
-| Project       | Workshop Project
-| Playbook      | solutions/manage_vm_playbook.yml
-| Execution Environment | Day2 EE
-| Credentials   | OpenShift Credential
-| Extra variables            | `vm_namespace: vms-aap-day2` +
+|
+名前          | `Stop VMs`
+|
+ジョブタイプ      | Run
+| インベントリー     | OpenShift Virtual Machines
+|
+プロジェクト       | Workshop Project
+| プレイブック      | solutions/manage_vm_playbook.yml
+|
+実行環境 | Day2 EE
+| 認証情報   | OpenShift Credential
+|
+追加変数            |
+`vm_namespace: vms-aap-day2` +
                                `task_file: stop_vm.yml`
 |===
 +
-. Once filled out, click the *Create job template* button.
+.
+入力が完了したら、*Create job template* ボタンをクリックします。
 +
 image::module-01-day-to-day/57-stop_vms_template.png[title="Stop VMs Template", link=self, window=blank, width=100%]
 +
-. Once the *Stop VMs* Job Template is created, select the *Launch template* button on the top right corner to run the job.
+.
+*Stop VMs* ジョブテンプレートが作成されたら、右上隅の *Launch template* ボタンを選択してジョブを実行します。
 +
 image::module-01-day-to-day/58-launch_stop_vms.png[title="Launch Stop VMs Template", link=self, window=blank, width=100%]
 +
-. The job will start running, and once it is successful you will see changes displayed in yellow.
+. ジョブが実行を開始し、成功すると変更が黄色で表示されます。
 +
 image::module-01-day-to-day/59-successful_job.png[title="Successful Job", link=self, window=blank, width=100%]
 +
-. Return to the OpenShift console to see that the virtual machines in the *vms-aap-day2* project have all now stopped.
+. OpenShift コンソールに戻って、*vms-aap-day2* プロジェクト内の仮想マシンがすべて停止していることを確認します。
 +
 image::module-01-day-to-day/60-stopped_vms.png[title="Stopped VMs", link=self, window=blank, width=100%]
 +
-. Return to the AAP Dashboard, and repeat this process to create the *Start VMs* and *Restart VMs* Ansible Job Templates. The details for each is provided below.
+. AAP ダッシュボードに戻り、このプロセスを繰り返して *Start VMs* および *Restart VMs* Ansible ジョブテンプレートを作成します。
+それぞれの詳細は以下に示します。
 
-. For Starting VMs, use the following details to create the job template:
+. VM を起動するには、以下の詳細を使用してジョブテンプレートを作成します:
 +
 |===
-| Parameter         | Value
+|
+パラメーター         | 値
 
-| Name          | `Start VMs`
-| Job Type      | Run
-| Inventory     | OpenShift Virtual Machines
-| Project       | Workshop Project
-| Playbook      | solutions/manage_vm_playbook.yml
-| Execution Environment | Day2 EE
-| Credentials   | OpenShift Credential
-| Extra variables            | `vm_namespace: vms-aap-day2` +
+|
+名前          | `Start VMs`
+|
+ジョブタイプ      | Run
+| インベントリー     | OpenShift Virtual Machines
+|
+プロジェクト       | Workshop Project
+| プレイブック      | solutions/manage_vm_playbook.yml
+|
+実行環境 | Day2 EE
+| 認証情報   | OpenShift Credential
+|
+追加変数            |
+`vm_namespace: vms-aap-day2` +
                                `task_file: start_vm.yml`
 |===
 +
-. For Restarting VMs, use the following details to create the job template:
+.
+VM を再起動するには、以下の詳細を使用してジョブテンプレートを作成します:
 +
 |===
-| Parameter         | Value
+|
+パラメーター         | 値
 
-| *Name*          | `Restart VMs`
-| *Job Type*      | Run
-| *Inventory*     | OpenShift Virtual Machines
-| *Project*       | Workshop Project
-| *Playbook*      | solutions/manage_vm_playbook.yml
-| *Execution Environment* | Day2 EE
-| *Credentials*   | OpenShift Credential
-| Extra variables            | `vm_namespace: vms-aap-day2` +
+|
+*名前* | `Restart VMs`
+|
+*ジョブタイプ* | Run
+| *インベントリー* | OpenShift Virtual Machines
+|
+*プロジェクト* | Workshop Project
+| *プレイブック* | solutions/manage_vm_playbook.yml
+|
+*実行環境* | Day2 EE
+| *認証情報* | OpenShift Credential
+|
+追加変数            |
+`vm_namespace: vms-aap-day2` +
                                `task_file: restart_vm.yml`
 |===
 +
-. Once you have created these Job templates select the *Launch template* button on the top right corner to run the job and notice the changes of these VMs within the OpenShift console. Each VM should start back up after executing the *Start VMs* template, and then each machine should reboot after executing the *Restrat VMs* template.
-
+.
+これらのジョブテンプレートを作成したら、右上隅の *Launch template* ボタンを選択してジョブを実行し、OpenShift コンソール内でこれらの VM の変更を確認します。
+*Start VMs* テンプレートの実行後、各 VM は再起動し、次に *Restrat VMs* テンプレートの実行後、各マシンは再起動するはずです。
 [[vm_mgmt_patch]]
-=== Patching your VMs
+=== VM のパッチ適用
 
-In this exercise, you’ll automate the patching of RHEL virtual machines by applying only security-related updates using Ansible Automation Platform.
+この演習では、Ansible Automation Platform を使用して、セキュリティ関連の更新のみを適用することで、RHEL 仮想マシンのパッチ適用を自動化します。
+ターゲットとする仮想マシンは、前の手順でセットアップした動的インベントリー — 特に *OpenShift Virtual Machines* インベントリー — の一部です。
+プレイブックやタスクを一から記述する代わりに、提供されている自動化コンテンツを使用します。これには以下が含まれます:
 
-The virtual machines you'll target are already part of the dynamic inventory that was set up in a previous step — specifically, the *OpenShift Virtual Machines* inventory.
+* dnf モジュールを使用してセキュリティ更新を実行するタスクファイル。
+* システム登録とパッチ適用を担当するロールを実行するプレイブック。
+目標は、このコンテンツが何をするかを理解し、Ansible Automation Platform の Web UI を使用して自動化を実行するためのジョブテンプレートを作成することです。
+NOTE: このラボでは、Vault 認証情報を使用して機密性の高い認証データを安全に処理し、サブスクリプション管理ロールを使用して RHEL システムを Red Hat に登録します。
+これにより、VM が更新に必要な正しいリポジトリーにアクセスできるようになり、安全な自動化プラクティスが実証されます。
+==== 提供されているタスクファイル: update_security_packages.yml の理解
 
-Rather than writing playbooks or tasks from scratch, you'll be working with provided automation content, which includes:
-
-* A task file that performs security updates using the dnf module.
-* A playbook that executes roles that are responsible for system registration and patching.
-
-Your goal is to understand what this content does and then create a Job Template to execute the automation using Ansible Automation Platform’s web UI.
-
-NOTE: This lab uses Vault Credentials to securely handle sensitive authentication data and a subscription management role to register RHEL systems to Red Hat. This ensures VMs have access to the correct repositories for updates and demonstrates secure automation practices.
-
-==== Understanding the Provided Task File: update_security_packages.yml
-
-This task file lives inside the tasks/ directory of the redhatone.vm_management.vm_management role. It uses the ansible.builtin.dnf module to scan for and install the latest security-related updates on all hosts in the inventory.
-
+このタスクファイルは、redhatone.vm_management.vm_management ロールの tasks/ ディレクトリ内にあります。
+これは、ansible.builtin.dnf モジュールを使用して、インベントリー内のすべてのホストで最新のセキュリティ関連の更新をスキャンしてインストールします。
 [source,yaml]
 ----
 - name: Update security-related packages on all hosts
@@ -724,17 +784,15 @@ This task file lives inside the tasks/ directory of the redhatone.vm_management.
     security: true <2>
     state: latest <3>
 ----
-<1> name: "*" — Targets all available packages.
-<2> security: true — Filters for only security-related updates.
-<3> state: latest — Ensures the latest available security updates are installed.
+<1> name: "*" — すべての利用可能なパッケージをターゲットにします。
+<2> security: true — セキュリティ関連の更新のみにフィルターをかけます。
+<3> state: latest — 最新の利用可能なセキュリティ更新がインストールされていることを保証します。
+このタスクはモジュール化されるように設計されています。
+これはロールに含まれており、まもなく使用される *task_file* のような変数を使用して、任意のプレイブックからトリガーできます。
+=== 提供されているプレイブック: patch_vm_playbook.yml の理解
 
-This task is designed to be modular.
-It is included in your role and can be triggered from any playbook using a variable like *task_file*, which will be used shortly.
-
-=== Understanding the Provided Playbook: patch_vm_playbook.yml
-
-This playbook is responsible for executing the logic that handles both system registration and patching.
-It is already present in your project directory.
+このプレイブックは、システム登録とパッチ適用の両方を処理するロジックを実行する責任があります。
+これはすでにプロジェクトディレクトリに存在しています。
 
 [source,yaml]
 ----
@@ -744,108 +802,117 @@ It is already present in your project directory.
     - redhatone.vm_management.rhsm_subscription <1>
     - redhatone.vm_management.vm_management <2>
 ----
-<1> redhatone.vm_management.rhsm_subscription: Registers the RHEL VMs to Red Hat using credentials provided via Vault. This step ensures the systems have access to the necessary repositories for receiving updates.
-<2> redhatone.vm_management.vm_management: Calls the role that includes the security update task (update_security_packages.yml), referenced via the task_file variable.
+<1> redhatone.vm_management.rhsm_subscription: Vault 経由で提供される認証情報を使用して、RHEL VM を Red Hat に登録します。
+このステップにより、システムが更新を受信するために必要なリポジトリーにアクセスできるようになります。
+<2> redhatone.vm_management.vm_management: *task_file* 変数を介して参照されるセキュリティ更新タスク (update_security_packages.yml) を含むロールを呼び出します。
+このプレイブックは、すべてのターゲットホストが登録とパッチ適用の両方を正しい順序で実行することを保証します。
+==== Ansible Automation Platform での Patch VMs ジョブテンプレートの作成
 
-The playbook ensures that every target host goes through both registration and patching in the correct order.
-
-==== Creating the Patch VMs Job Template in Ansible Automation Platform
-
-Now lets connect all the pieces through the AAP web interface and run the automation using a Job Template.
-
-. Using the left side navigation bar, click on *Automation Execution* and then *Templates*.
-. Click on the *Create template* button, and then select *Create job template* from the dropdown menu.
+次に、AAP Web インターフェイスを介してすべての部分を接続し、ジョブテンプレートを使用して自動化を実行します。
+. 左側のナビゲーションバーを使用して、*Automation Execution*、次に *Templates* をクリックします。
+.
+*Create template* ボタンをクリックし、ドロップダウンメニューから *Create job template* を選択します。
 +
 image::module-01-day-to-day/61-create_job_template.png[title="Stop VMs Template", link=self, window=blank, width=100%]
 +
-. On the *Create job template* page, fill out the following fields:
+. *Create job template* ページで、以下のフィールドに入力します:
 +
 |===
-| Parameter               | Value
+|
+パラメーター               | 値
 
-| Name                    | `Patch VMs`
-| Job Type                | Run
-| Inventory               | OpenShift Virtual Machines
-| Project                 | Workshop Project
-| Playbook                | solutions/patch_playbook.yml
-| Execution Environment   | Day2 EE
-| Credentials             | Workshop Credential, Vault Credential
-| Extra Variables         | `task_file: update_security_packages.yml`
-| Privilege Escalation    | Enabled
+|
+名前                    |
+`Patch VMs`
+| ジョブタイプ                |
+Run
+| インベントリー               | OpenShift Virtual Machines
+|
+プロジェクト                 | Workshop Project
+|
+プレイブック                | solutions/patch_playbook.yml
+|
+実行環境   | Day2 EE
+| 認証情報             |
+Workshop Credential, Vault Credential
+| 追加変数         | `task_file: update_security_packages.yml`
+|
+特権昇格    | Enabled
 
 |===
 +
-IMPORTANT: Notice there are two credentials attached and privilege escalation is enabled.
+重要: 2 つの認証情報が添付されており、特権昇格が有効になっていることに注意してください。
 +
-. Once the form is filled out, click the *Create job template* button.
+.
+フォームに記入したら、*Create job template* ボタンをクリックします。
 +
 image::module-01-day-to-day/62-create_patch_template.png[title="Create Patch Template", link=self, window=blank, width=100%]
 +
-. Once created, click *Launch Template* button in the top-right corner to start the job.
-. When the *Patch VMs* job has completed successfully, you should see output similar to:
+.
+作成後、右上隅の *Launch Template* ボタンをクリックしてジョブを開始します。
+.
+*Patch VMs* ジョブが正常に完了すると、次のような出力が表示されるはずです:
 +
 image::module-01-day-to-day/63-patch_vm.png[title="Patch VM", link=self, window=blank, width=100%]
 
-==== Reviewing the Job Output
+==== ジョブ出力の確認
 
-After the job runs, you’ll be able to see:
+ジョブの実行後、以下を確認できます:
 
-* A task-by-task breakdown showing which operations were performed.
-* Output for the task titled *Update security-related packages on all hosts*.
-* Per-host details indicating which security updates were applied.
+* どの操作が実行されたかを示すタスクごとの内訳。
+* *Update security-related packages on all hosts* というタイトルのタスクの出力。
+* どのセキュリティ更新が適用されたかを示すホストごとの詳細。
 
-. Under the *TASK* for *Update security-related packages on all hosts*, click on *vms-aap-day2-rhel9-vm1*.
+.
+*Update security-related packages on all hosts* の *TASK* の下で、*vms-aap-day2-rhel9-vm1* をクリックします。
 +
 image::module-01-day-to-day/64-patch_complete.png[title="Patching Complete", link=self, window=blank, width=100%]
 +
-. You will be presented with additional *Details* about the task, and be able to validate that system was indeed patched by our automation job by clicking on the *Data* tab.
+.
+タスクに関する追加の *Details* が表示され、*Data* タブをクリックすることで、システムが実際に自動化ジョブによってパッチ適用されたことを検証できます。
 +
 image::module-01-day-to-day/65-patch_details.png[title="Patch Details", link=self, window=blank, width=100%]
 
 [[vm_mgmt_hp]]
-=== Hot-Plugging CPU and Memory Resources
+=== CPU およびメモリーリソースのホットプラグ
 
-One of the great benefits of having virtual workloads is the ability to adjust the resources used by those workloads on the fly to meet workload demands. Compared to the days of having to shut down the server to physically add RAM or upgrade the processor, the ability to scale VM resources dynamically by hot-plugging additional resources is a fantastic timesaver. Also, being able to automate the scaling up and down of these requests using Ansible Automation Platform based on metrics gathered from the guests ensures efficiency in both resource consumption and physical administrative time.
+仮想ワークロードを持つことの大きな利点の 1 つは、ワークロードの需要を満たすために、実行中のワークロードが使用するリソースをその場で調整できることです。
+物理的に RAM を追加したり、プロセッサーをアップグレードしたりするためにサーバーをシャットダウンしなければならなかった時代と比較して、追加のリソースをホットプラグすることで VM リソースを動的にスケーリングできる機能は、時間を大幅に節約できます。
+また、ゲストから収集されたメトリックに基づいて、Ansible Automation Platform を使用してこれらのリクエストのスケールアップとスケールダウンを自動化できるため、リソース消費と物理的な管理時間の両方で効率が保証されます。
+このセクションでは、Ansible Automation Platform と redhat.openshift_virtualization コレクションを使用して、実行中の仮想マシン (VM) に CPU およびメモリーリソースをホットプラグする方法を学びます。
+ホットプラグとは、再起動を必要とせずに、実行中の VM に CPU やメモリーなどのハードウェアリソースを追加または削除できる機能です。
+この機能は、動的なワークロードにとって非常に重要であり、ダウンタイムを最小限に抑えながら、需要に基づいてリソースをスケーリングできます。
+この演習では、VM のリソースと特性を定義する OpenShift Virtualization の再利用可能なオブジェクトである *インスタンスタイプ* の使用に主に焦点を当てます。
+インスタンスタイプは、VM 間で一貫した構成を可能にすることで、リソース管理を簡素化します。
 
-In this section, you will learn how to hot-plug CPU and memory resources into a running Virtual Machine (VM) using Ansible Automation Platform and the redhat.openshift_virtualization collection.
+==== インスタンスタイプとは何ですか?
+インスタンスタイプは、新しい VM のリソース (CPU やメモリーなど) と特性を定義する再利用可能な構成オブジェクトです。
+OpenShift Virtualization は、次の 2 種類のインスタンスタイプを提供します:
 
-Hot-plugging is the ability to add or remove hardware resources, such as CPU or memory, to a running VM without requiring a reboot. This capability is critical for dynamic workloads, allowing you to scale resources based on demand while minimizing downtime.
+. *VirtualMachineInstancetype*: 特定の名前空間に限定されたインスタンスタイプの名前空間スコープオブジェクト。
+. *VirtualMachineClusterInstancetype*: すべての名前空間で利用可能なインスタンスタイプのクラスターワイドオブジェクト。
+どちらのタイプも同じ VirtualMachineInstancetypeSpec を共有しており、これによりカスタム構成を定義したり、OpenShift Virtualization がインストールされたときにデフォルトで含まれるさまざまなインスタンスタイプを使用したりできます。
+インスタンスタイプを使用することで、VM 構成管理を簡素化し、すべてのデプロイメント全体で一貫性を確保できるため、リソースのホットプラグに*推奨されるアプローチ*となります。
+このラボでは、主にインスタンスタイプの方法に焦点を当てますが、コンテキストのために VM 仕様を直接変更する従来のアプローチについても学びます。
+NOTE: 従来の方法は、インスタンスタイプを使用しない VM を作成する場合にのみ機能します。
+==== VM がインスタンスタイプを使用しているかどうかを識別する方法
+VM がインスタンスタイプで作成されているかどうかを判断するには、次の手順に従います:
 
-This exercise focuses on using *instance types*, which are reusable objects in OpenShift Virtualization that define the resources and characteristics for VMs. Instance types simplify resource management by enabling consistent configurations across VMs.
-
-==== What Are Instance Types?
-
-An instance type is a reusable configuration object where you define resources (like CPU and memory) and characteristics for new VMs.
-OpenShift Virtualization provides two types of instance types:
-
-. *VirtualMachineInstancetype*: A namespaced object for instance types limited to a specific namespace.
-. *VirtualMachineClusterInstancetype*: A cluster-wide object for instance types available across all namespaces.
-
-Both types share the same VirtualMachineInstancetypeSpec, which allows you to define custom configurations or use the variety of instance types included by default when OpenShift Virtualization is installed.
-
-By using instance types, you can simplify VM configuration management and ensure consistency throughout all your deployments, making them the *recommended approach* for hot-plugging resources.
-
-In this lab, you will primarily focus on using the instance type method while also learning about the classic approach of directly modifying the VM specification for context.
-
-NOTE: The classic method only works when creating VMs that do not use an instance type.
-
-==== How to Identify if a VM Uses Instance Types or Not?
-
-To determine whether a VM is created with an instance type or not, follow these steps:
-
-. Navigate to the *Overview* tab of the *rhel9-vm1* in the OpenShift Virtualization console.
-. In the *Details* section, look for the following:
-   - *Instance Type*: If the VM uses an instance type, this field will display the name of the instance type applied to the VM (e.g., u1.small).
-   - *Template*: If no instance type is used, this field will display either None or the name of the template used to create the VM.
+.
+OpenShift Virtualization コンソールで *rhel9-vm1* の *Overview* タブに移動します。
+.
+*Details* セクションで、以下を探します:
+   - *Instance Type*: VM がインスタンスタイプを使用している場合、このフィールドには VM に適用されたインスタンスタイプの名前が表示されます (例: u1.small)。
+- *Template*: インスタンスタイプが使用されていない場合、このフィールドには None または VM の作成に使用されたテンプレートの名前が表示されます。
 +
 image::module-01-day-to-day/66-vm_details.png[title="VM Details", link=self, window=blank, width=100%]
 
-The instance_type method is the recommended approach for hot-plugging resources into a VM. It ensures consistent and reusable resource configurations across multiple VMs while leveraging the powerful features of OpenShift Virtualization.
+インスタンスタイプの方法は、VM にリソースをホットプラグするための推奨されるアプローチです。
+これは、OpenShift Virtualization の強力な機能を活用しながら、複数の VM 間で一貫した再利用可能なリソース構成を保証します。
+==== 事前に作成された hot_plug.yml ファイルを使用したリソースの更新
 
-==== Using the Pre-created hot_plug.yml File to Update Resources
-
-The hot_plug.yml file consists of a task that updates a running VM by applying a new instance type. This approach lets you add CPU and memory resources dynamically without needing to recreate or power off the VM.
-
+hot_plug.yml ファイルは、新しいインスタンスタイプを適用することで実行中の VM を更新するタスクで構成されています。
+このアプローチにより、VM を再作成したり電源を切ったりすることなく、CPU およびメモリーリソースを動的に追加できます。
 [source, yaml]
 ----
 - name: Swap Instance Type to add more Resources
@@ -858,22 +925,23 @@ The hot_plug.yml file consists of a task that updates a running VM by applying a
       name: "{{ instance_type }}" <7>
       revisionName: "" <8>
 ----
-<1> *redhat.openshift_virtualization.kubevirt_vm*: Specifies the module used to manage VMs in OpenShift Virtualization.
-<2> *name*: The name of the VM to which the new resources will be applied.
-<3> *namespace*: The namespace in which the VM resides.
-<4> *state*: Ensures the VM is present and available.
-<5> *run_strategy*: Restarts the VM in case of errors, does not start machines stopped manually.
-<6> *instancetype*: Defines the instance type for the VM, allowing you to use pre-configured or custom resource settings.
-<7> *instancetype.name*: The name of the instance type to be applied.
-<8> *instancetype.revisionName*: Optionally specifies the exact revision of the instance type, ensuring compatibility with the VM. It is typically auto-generated, thus left empty.
+<1> *redhat.openshift_virtualization.kubevirt_vm*: OpenShift Virtualization で VM を管理するために使用されるモジュールを指定します。
+<2> *name*: 新しいリソースが適用される VM の名前。
+<3> *namespace*: VM が存在する名前空間。
+<4> *state*: VM が存在し、利用可能であることを保証します。
+<5> *run_strategy*: エラーが発生した場合に VM を再起動しますが、手動で停止されたマシンは起動しません。
+<6> *instancetype*: VM のインスタンスタイプを定義し、事前設定されたリソース設定またはカスタムリソース設定の使用を可能にします。
+<7> *instancetype.name*: 適用されるインスタンスタイプの名前。
+<8> *instancetype.revisionName*: オプションでインスタンスタイプの正確なリビジョンを指定し、VM との互換性を保証します。
+通常は自動生成されるため、空のままにします。
 
-NOTE: VMs must be created using Instance Types for this task method to work. Otherwise you must use the Classic method.
+NOTE: このタスクメソッドが機能するには、VM がインスタンスタイプを使用して作成されている必要があります。
+そうでない場合は、従来の方法を使用する必要があります。
 
-==== Classic Method: Modifying the Spec Directly (Informational Only)
+==== 従来の方法: Spec を直接変更する (情報提供のみ)
 
-The classic method involves directly modifying the VM's spec file to update CPU and memory resources.
-While this approach is flexible, it lacks the reusability and consistency offered by instance types, making it less ideal for managing resources across multiple VMs.
-
+従来の方法では、VM の spec ファイルを直接変更して、CPU およびメモリーリソースを更新します。
+このアプローチは柔軟性がありますが、インスタンスタイプが提供する再利用性と一貫性が欠けているため、複数の VM 間でリソースを管理するには理想的ではありません。
 [source, yaml]
 ----
 - name: Modify CPU & Memory Resources
@@ -888,86 +956,85 @@ While this approach is flexible, it lacks the reusability and consistency offere
         memory: <8>
           guest: 4Gi
 ----
-<1> *redhat.openshift_virtualization.kubevirt_vm*: Specifies the module used to manage VMs in OpenShift Virtualization.
-<2> *name*: The name of the VM being modified.
-<3> *namespace*: The namespace in which the VM resides.
-<4> *state*: Ensures the VM is in the desired state, in this case, present.
-<5> *spec*: Directly modifies the VM's specification.
-<6> *spec.domain*: Contains settings related to the VM's virtualized environment.
-<7> *spec.domain.cpu*: Specifies the number of CPU sockets for the VM (e.g., 2).
-<8> *spec.domain.memory*: Defines the memory allocated to the VM, (e.g., 4Gi).
+<1> *redhat.openshift_virtualization.kubevirt_vm*: OpenShift Virtualization で VM を管理するために使用されるモジュールを指定します。
+<2> *name*: 変更される VM の名前。
+<3> *namespace*: VM が存在する名前空間。
+<4> *state*: VM が目的のステータス、この場合は present であることを保証します。
+<5> *spec*: VM の仕様を直接変更します。
+<6> *spec.domain*: VM の仮想化環境に関連する設定が含まれます。
+<7> *spec.domain.cpu*: VM の CPU ソケットの数を指定します (例: 2)。
+<8> *spec.domain.memory*: VM に割り当てられたメモリーを定義します (例: 4Gi)。
+NOTE: 従来型の VM はこのラボ演習の一部ではないため、従来の方法は情報提供のみを目的としています。
+==== ホットプラグジョブテンプレートの作成と実行
 
-NOTE: Classic VMs are not a part of this lab exercise, and the Classic Method is for informational purposes only.
-
-==== Create and Run the Hot-Plug Job Template
-
-. Within the AAP UI Dashboard, use the left side menu to navigate to *Automation Execution* and then click on *Templates*.
-. Click *Create Template* and select *Create job template* from the dropdown menu that appears.
+. AAP UI ダッシュボード内で、左側のメニューを使用して *Automation Execution*、次に *Templates* をクリックします。
+.
+*Create Template* をクリックし、表示されたドロップダウンメニューから *Create job template* を選択します。
 +
 image::module-01-day-to-day/67-create_template.png[title="Create Job Template", link=self, window=blank, width=100%]
 +
-. Fill in the following details to create a job template:
+. 以下の詳細を入力してジョブテンプレートを作成します:
 +
 [cols="2,3",options="header"]
 |===
-| Parameter | Value
-| *Name* | `Hot Plug VMs`
-| *Job Type* | Run
-| *Inventory* | OpenShift Virtual Machines
-| *Project* | Workshop Project
-| *Playbook* | solutions/manage_vm_playbook.yml
-| *Execution Environment* | Day 2 EE
-| *Credentials* | OpenShift Credential
-| *Extra variables* | `vm_namespace: vms-aap-day2` +
+| パラメーター | 値
+| *名前* | `Hot Plug VMs`
+| *ジョブタイプ* | Run
+| *インベントリー* | OpenShift Virtual Machines
+| *プロジェクト* | Workshop Project
+| *プレイブック* | solutions/manage_vm_playbook.yml
+| *実行環境* | Day 2 EE
+| *認証情報* | OpenShift Credential
+| *追加変数* | `vm_namespace: vms-aap-day2` +
                       `task_file: hot_plug.yml` +
                       `instance_type: u1.2xmedium`
 |===
 +
-. When the details are filled out, click *Create Job Template*.
+.
+詳細を入力したら、*Create Job Template* をクリックします。
 +
 image::module-01-day-to-day/68-create_hotadd_template.png[title="Create HotAdd Template", link=self, window=blank, width=100%]
 +
-. Launch the job by selecting the *Launch Template* button from the top-right corner. When the job completes you should see output that shows it was able to modify the virtual machines instance type.
+.
+右上隅の *Launch Template* ボタンを選択してジョブを起動します。
+ジョブが完了すると、仮想マシンのインスタンスタイプを変更できたことを示す出力が表示されるはずです。
 +
 image::module-01-day-to-day/69-hotadd_template_success.png[title="HotAdd Template Success", link=self, window=blank, width=100%]
 +
-. When the job completes, return to the OpenShift console and view the details of the rhel9-vm1 Virtual Machine once again. You should see that the *InstanceType* field has changed and is now set to *u1.2xmedium*.
+. ジョブが完了したら、OpenShift コンソールに戻り、rhel9-vm1 仮想マシンの詳細をもう一度表示します。
+*InstanceType* フィールドが変更され、*u1.2xmedium* に設定されていることが確認できるはずです。
 +
 image::module-01-day-to-day/70-vm_modified_instancetype.png[title="VM InstanceType Modified ", link=self, window=blank, width=100%]
 
 [[vm_mgmt_backup]]
-=== Backup and Restore Virtual Machines
+=== 仮想マシンのバックアップとリストア
 
-One of the most critical aspects of virtual machine administration is ensuring business continuity through reliable backup and restore capabilities. The ability to capture point-in-time snapshots of running VMs and quickly restore them in case of disasters, system failures, or unintended changes can save organizations significant time and resources compared to traditional backup methods.
+仮想マシン管理の最も重要な側面の 1 つは、信頼性の高いバックアップおよびリストア機能を通じてビジネス継続性を確保することです。
+実行中の VM の特定の時点のスナップショットをキャプチャし、災害、システム障害、または意図しない変更が発生した場合にそれらを迅速にリストアできる機能は、従来のバックアップ方法と比較して、組織の時間とリソースを大幅に節約できます。
+この演習では、Ansible Automation Platform を使用した VM スナップショットによる仮想マシンのバックアップとリストアを自動化します。
+この機能により、運用効率を維持しながら、仮想化されたワークロードを大規模に保護できます。
+OpenShift Virtualization の仮想マシンスナップショットは、アタッチされたすべての Container Storage Interface (CSI) ボリュームと VM 構成メタデータを含む、特定の時点での VM の完全な状態とデータをキャプチャします。
+実行中の VM の場合、QEMU ゲストエージェントは、ファイルシステムをフリーズし、スナップショットを取得し、次にファイルシステムを解凍することにより、スナップショット作成中の I/O 操作を調整し、データの一貫性を確保します。
+スナップショットは、次の 3 つの OpenShift API を通じて管理されます:
 
-In this exercise, you'll automate the backup and restoration of Virtual Machines using VM Snapshots with Ansible Automation Platform. This capability enables you to protect your virtualized workloads at scale while maintaining operational efficiency.
+* *VirtualMachineSnapshot*: スナップショットを作成するためのユーザーリクエストを表し、VM の現在の状態に関する情報が含まれます
+* *VirtualMachineSnapshotContent*: VM スナップショットコントローラーによって作成された、クラスター上のプロビジョニングされたリソース (実際のスナップショット) を表します
+* *VirtualMachineRestore*: スナップショットから VM をリストアするためのユーザーリクエストを表します
 
-Virtual Machine Snapshots in OpenShift Virtualization capture the complete state and data of a VM at a specific point in time, including all attached Container Storage Interface (CSI) volumes and VM configuration metadata. For running VMs, the QEMU guest agent coordinates I/O operations during snapshot creation, ensuring data consistency by freezing the filesystem, taking the snapshot, and then thawing the filesystem.
+=== 既存のセットアップ
 
-Snapshots are managed through three OpenShift APIs:
+エクスペリエンスを支援するために、以下のコンテンツがすでに作成および設定されています:
 
-* *VirtualMachineSnapshot*: Represents a user request to create a snapshot and contains information about the current state of the VM
-* *VirtualMachineSnapshotContent*: Represents a provisioned resource on the cluster (the actual snapshot) created by the VM snapshot controller
-* *VirtualMachineRestore*: Represents a user request to restore a VM from a snapshot
+* スナップショット自動化タスク (*snapshot_vms.yml* および *_snapshot_vm.yml*) は、ループベースのアプローチを使用して VM スナップショットを処理するように事前に記述されています。
+* リストア自動化タスク (*restore_vm_snapshots.yml* および *_restore_vm_snapshot.yml*) は、VM の停止、リストア、再起動を含む完全なリストアワークフローを管理するために事前に作成されています。
+* *manage_vm_playbook.yml* プレイブックは、VM のスナップショットを取得するかリストアするかに基づく入力変数に基づいて、これらのタスクを実行するようにすでに設定されています。
+これらのファイルを作成または変更する必要はありませんが、Ansible Automation Platform でジョブテンプレートを作成するときに参照するため、それらがどのように機能するかを理解することが重要です。
+=== 提供されているスナップショットタスクファイルの理解
 
-=== The Existing Setup
-
-To assist with your experience, the following content has already been created and configured for you:
-
-* The snapshot automation tasks (*snapshot_vms.yml* and *_snapshot_vm.yml*) have been prewritten to handle the VM snapshots using a loop based approach.
-* The restoration automation tasks (*restore_vm_snapshots.yml* and *_restore_vm_snapshot.yml*) have been precreated to manage the complete restoration workflow including stopping, restoring, and restarting VMs.
-* The *manage_vm_playbook.yml* playbook is already configured to execute these tasks based on input variables of whether to take or restore the snapshot of the VMs.
-
-Although you don't need to create or modify these files, it's important to understand how they work, as you'll be referencing them when creating job templates in Ansible Automation Platform.
-
-=== Understanding the Provided Snapshot Task Files
-
-The snapshot automation uses a two tiered approach where one task file handles multiple snapshots using loops, and an include task file takes the individual VM snapshots. 
-
+スナップショット自動化では、1 つのタスクファイルがループを使用して複数のスナップショットを処理し、インクルードタスクファイルが個々の VM スナップショットを取得するという 2 層のアプローチを使用します。
 === snapshot_vms.yml
 
-This main task file processes a comma-delimited string of VM names and creates individual snapshot tasks for each VM using Ansible's loop functionality.
-
+このメインのタスクファイルは、コンマ区切りの VM 名文字列を処理し、Ansible のループ機能を使用して VM ごとに個別のスナップショットタスクを作成します。
 [source,yaml]
 ----
 ---
@@ -977,27 +1044,28 @@ This main task file processes a comma-delimited string of VM names and creates i
   loop_control:
     loop_var: vm_to_snapshot
   loop: "{{ vms_to_snapshot.replace(' ','').split(',') }}"
-  when: vms_to_snapshot | default('', True) | length > 0
+  when: vms_to_snapshot |
+default('', True) | length > 0
 ----
 
-**Explanation of the Task:**
+**タスクの説明:**
 
-* *when*: Validates that the `vms_to_snapshot` variable contains content before proceeding using filters to check variable state
-* *loop*: Processes the comma-delimited VM names, removing spaces and creating a list using Jinja2 functions
-* *loop_control/loop_var*: Sets the variable name (`vm_to_snapshot`) for each iteration of the loop
-* *ansible.builtin.include_tasks*: Calls the included task file `_snapshot_vm.yml` for each VM that captures the necessary steps (tasks) to complete the snapshot process.
-
+* *when*: `vms_to_snapshot` 変数がコンテンツを含んでいることを、フィルターを使用して変数状態をチェックして検証してから続行します
+* *loop*: コンマ区切りの VM 名を処理し、スペースを削除し、Jinja2 関数を使用してリストを作成します
+* *loop_control/loop_var*: ループの各反復の変数名 (`vm_to_snapshot`) を設定します
+* *ansible.builtin.include_tasks*: スナップショットプロセスを完了するために必要なステップ (タスク) をキャプチャする、インクルードされたタスクファイル `_snapshot_vm.yml` を VM ごとに呼び出します。
 === _snapshot_vm.yml
 
-A task file beginning with an underscore "_" indicates that it is included within another task file. This file handles the actual snapshot creation for a single VM using OpenShift APIs and contains the core snapshot logic.
-
+アンダースコア "_" で始まるタスクファイルは、別のタスクファイル内にインクルードされていることを示します。
+このファイルは、OpenShift API を使用して単一の VM の実際のスナップショット作成を処理し、コアのスナップショットロジックを含んでいます。
 [source,yaml]
 ----
 ---
 - name: Verify VM to Snapshot Provided
   ansible.builtin.assert:
     that:
-      - vm_to_snapshot | default('', True) | length > 0
+      - vm_to_snapshot |
+default('', True) | length > 0
     quiet: True
     fail_msg: VM to Snapshot not specified
 
@@ -1016,6 +1084,7 @@ A task file beginning with an underscore "_" indicates that it is included withi
       metadata:
         generateName: "{{ vm_info.resources[0].metadata.name }}-"
         namespace: "{{ vm_info.resources[0].metadata.namespace }}"
+ 
         ownerReferences:
           - apiVersion: kubevirt.io/v1
             blockOwnerDeletion: false
@@ -1024,81 +1093,88 @@ A task file beginning with an underscore "_" indicates that it is included withi
             uid: "{{ vm_info.resources[0].metadata.uid }}"
       spec:
         source:
-          apiGroup: kubevirt.io
+          apiGroup: 
+kubevirt.io
           kind: VirtualMachine
           name: "{{ vm_info.resources[0].metadata.name }}"
     wait: true
     wait_condition:
       type: Ready
-  when: "'resources' in vm_info and vm_info.resources | length == 1"
+  when: "'resources' in vm_info and vm_info.resources |
+length == 1"
 ----
 
-**Explanation of the Tasks:**
+**タスクの説明:**
 
-There are three tasks in this included task file:
+このインクルードされたタスクファイルには 3 つのタスクがあります:
 
-. Verifies that a variable called `vm_to_snapshot` has been provided using `ansible.builtin.assert`
-. Retrieves the definition of the `VirtualMachine` resource using `kubevirt_vm_info` and stores it in `vm_info`
-. Creates a new `VirtualMachineSnapshot` resource using `redhat.openshift.k8s` module
+. `ansible.builtin.assert` を使用して、`vm_to_snapshot` という変数が提供されていることを検証します。
+. `kubevirt_vm_info` を使用して `VirtualMachine` リソースの定義を取得し、`vm_info` に格納します。
+. `redhat.openshift.k8s` モジュールを使用して新しい `VirtualMachineSnapshot` リソースを作成します。
 
-Key details of the snapshot creation:
+スナップショット作成の主な詳細:
 
-* *generateName*: OpenShift capability to generate a unique name when `name` is not provided
-* *ownerReferences*: Creates a relationship between the `VirtualMachineSnapshot` and the `VirtualMachine` so that if the VM is deleted, the OpenShift garbage collector will automatically delete the snapshot
-* *wait/wait_condition*: Pauses execution until the snapshot completes successfully (condition type `Ready` set to `true`)
-* *when*: Ensures the snapshot is only created if exactly one VM resource was found
+* *generateName*: `name` が提供されていない場合に一意の名前を生成する OpenShift の機能。
+* *ownerReferences*: `VirtualMachineSnapshot` と `VirtualMachine` の間にリレーションシップを作成し、VM が削除された場合に OpenShift のガベージコレクターがスナップショットを自動的に削除するようにします。
+* *wait/wait_condition*: スナップショットが正常に完了するまで実行を一時停止します (条件
+タイプ `Ready` が `true` に設定されている)。
+* *when*: ちょうど 1 つの VM リソースが見つかった場合にのみスナップショットが作成されることを保証します。
 
-=== Creating and Running the Snapshot VMs Job Template
+=== Snapshot VMs ジョブテンプレートの作成と実行
 
-Now let's connect all the pieces through the AAP web interface and run the snapshot automation using a Job Template.
+次に、AAP Web インターフェイスを介してすべての部分を接続し、ジョブテンプレートを使用してスナップショット自動化を実行します。
+. AAP UI ダッシュボードにアクセスし、*Automation Execution → Templates* に移動します。
 
-. Head to the AAP UI Dashboard, navigate to *Automation Execution → Templates*.
+.
+*Create Template* をクリックし、*Create job template* を選択します。
 
-. Click *Create Template* and select *Create job template*.
-
-. Fill in the following details:
+. 以下の詳細を入力します:
 +
 [cols="2,3",options="header"]
 |===
-| Parameter | Value
-| *Name* | Snapshot VMs
-| *Job Type* | Run
-| *Inventory* | OpenShift Virtual Machines
-| *Project* | Workshop Project
-| *Playbook* | solutions/manage_vm_playbook.yml
-| *Execution Environment* | Day2 EE
-| *Credentials* | OpenShift Credential
-| *Extra variables* | `vm_namespace: vms-aap-day2` +
+| パラメーター | 値
+| *名前* | Snapshot VMs
+| *ジョブタイプ* | Run
+| *インベントリー* | OpenShift Virtual Machines
+| *プロジェクト* | Workshop Project
+| *プレイブック* | solutions/manage_vm_playbook.yml
+| *実行環境* | Day2 EE
+| *認証情報* | OpenShift Credential
+| *追加変数* | `vm_namespace: vms-aap-day2` +
                       `task_file: snapshot_vms.yml` +
                       `vms_to_snapshot: rhel9-vm1`
 |===
 
-. Click *Create Job Template*.
+.
+*Create Job Template* をクリックします。
 +
 image::module-01-day-to-day/71-create-snapshot.png[title="Create Snapshot Template", link=self, window=blank, width=100%]
 +
-. Launch the job by selecting *Launch Template* from the top-right corner.
+.
+右上隅から *Launch Template* を選択してジョブを起動します。
+=== スナップショット作成の確認
 
-=== Verifying Snapshot Creation
+ジョブが正常に完了したら、新しいスナップショットが作成されたことを確認します。
 
-Once the Job completes successfully, confirm the new Snapshot has been created.
+.
+OpenShift コンソールに移動し、`vms-aap-day2` プロジェクト内の *Virtualization → VirtualMachines* に移動します。
 
-. Navigate to the OpenShift console and go to *Virtualization → VirtualMachines* within the `vms-aap-day2` project.
+.
+`rhel9-vm1` インスタンスを選択し、*Snapshots* タブをクリックします。
 
-. Select the `rhel9-vm1` instance and click the *Snapshots* tab.
-
-. Verify that the snapshot appears in the list.
+. スナップショットがリストに表示されていることを確認します。
 +
 image::module-01-day-to-day/72-ocp-snapshot-details.png[title="Snapshot Details", link=self, window=blank, width=100%]
 
-=== Understanding the Provided Restoration Task Files
+=== 提供されているリストアタスクファイルの理解
 
-The restoration automation handles the complete workflow of stopping a VM, restoring from a snapshot, and restarting the VM. Unlike snapshot creation, a Virtual Machine must be powered off prior to initiating a restoration from a snapshot. This automation follows the same two-tiered pattern as the snapshot process.
-
+リストア自動化は、VM の停止、スナップショットからのリストア、VM の再起動という完全なワークフローを処理します。
+スナップショットの作成とは異なり、スナップショットからのリストアを開始する前に仮想マシンを電源オフにする必要があります。
+この自動化は、スナップショットプロセスと同じ 2 層パターンに従います。
 === restore_vm_snapshots.yml
 
-This main task file processes a comma-delimited string of snapshot names and creates individual restoration tasks. The primary difference from the snapshot task is that it references snapshot names rather than VM names.
-
+このメインのタスクファイルは、コンマ区切りのスナップショット名文字列を処理し、個別のリストアタスクを作成します。
+スナップショットタスクとの主な違いは、VM 名ではなくスナップショット名を参照することです。
 [source,yaml]
 ----
 ---
@@ -1108,19 +1184,21 @@ This main task file processes a comma-delimited string of snapshot names and cre
   loop_control:
     loop_var: vm_snapshot
   loop: "{{ vm_snapshots.replace(' ','').split(',') }}"
-  when: vm_snapshots | default('', True) | length > 0
+  when: vm_snapshots |
+default('', True) | length > 0
 ----
 
-This task operates on a variable called `vm_snapshots` that contains a comma-delimited string of `VirtualMachineSnapshot` resource names to restore.
-
+このタスクは、リストアする `VirtualMachineSnapshot` リソース名のコンマ区切り文字列を含む `vm_snapshots` という変数に対して操作を行います。
 === _restore_vm_snapshot.yml
 
-This included task file manages the complete restoration workflow following these steps:
+このインクルードされたタスクファイルは、次の手順に従って完全なリストアワークフローを管理します:
 
-. Retrieve the `VirtualMachineSnapshot` based on the snapshot name provided
-. Stop the Virtual Machine
-. Create the `VirtualMachineRestore` resource and wait until restoration completes
-. Start the Virtual Machine
+.
+提供されたスナップショット名に基づいて `VirtualMachineSnapshot` を取得します。
+. 仮想マシンを停止します。
+.
+`VirtualMachineRestore` リソースを作成し、リストアが完了するまで待ちます。
+. 仮想マシンを起動します。
 
 [source,yaml]
 ----
@@ -1128,7 +1206,8 @@ This included task file manages the complete restoration workflow following thes
 - name: Verify VM Snapshot Provided
   ansible.builtin.assert:
     that:
-      - vm_snapshot | default('', True) | length > 0
+      - vm_snapshot |
+default('', True) | length > 0
     quiet: True
     fail_msg: VM Snapshot not specified
 
@@ -1146,7 +1225,8 @@ This included task file manages the complete restoration workflow following thes
       redhat.openshift_virtualization.kubevirt_vm:
         name: "{{ vm_snapshot_instance.resources[0].metadata.ownerReferences[0].name }}"
         namespace: "{{ vm_snapshot_instance.resources[0].metadata.namespace }}"
-        run_strategy: Halted
+        
+run_strategy: Halted
         wait: true
 
     - name: Create Restore
@@ -1157,13 +1237,15 @@ This included task file manages the complete restoration workflow following thes
           kind: VirtualMachineRestore
           metadata:
             generateName: "{{ vm_snapshot_instance.resources[0].metadata.ownerReferences[0].name }}-"
-            namespace: "{{ vm_snapshot_instance.resources[0].metadata.namespace }}"
+            namespace: 
+"{{ vm_snapshot_instance.resources[0].metadata.namespace }}"
             ownerReferences:
               - apiVersion: kubevirt.io/v1
                 blockOwnerDeletion: false
                 kind: VirtualMachine
                 name: "{{ vm_snapshot_instance.resources[0].metadata.ownerReferences[0].name }}"
-                uid: "{{ vm_snapshot_instance.resources[0].metadata.ownerReferences[0].uid }}"
+                uid: 
+"{{ vm_snapshot_instance.resources[0].metadata.ownerReferences[0].uid }}"
           spec:
             target:
               apiGroup: kubevirt.io
@@ -1171,7 +1253,8 @@ This included task file manages the complete restoration workflow following thes
               name: "{{ vm_snapshot_instance.resources[0].metadata.ownerReferences[0].name }}"
             virtualMachineSnapshotName: "{{ vm_snapshot_instance.resources[0].metadata.name }}"
         wait: true
-        wait_timeout: 600
+     
+    wait_timeout: 600
         wait_condition:
           type: Ready
 
@@ -1181,60 +1264,62 @@ This included task file manages the complete restoration workflow following thes
         namespace: "{{ vm_snapshot_instance.resources[0].metadata.namespace }}"
         run_strategy: Always
         wait: true
-  when: "'resources' in vm_snapshot_instance and vm_snapshot_instance.resources | length == 1"
+  when: "'resources' in vm_snapshot_instance and vm_snapshot_instance.resources |
+length == 1"
 ----
 
-**Explanation of the Tasks:**
+**タスクの説明:**
 
-* *kubernetes.core.k8s_info*: Retrieves the snapshot details to identify the associated VM (instead of `kubevirt_vm_info` which is specific to Virtual Machines, this allows retrieval of any OpenShift resource)
-* *block*: Groups the restoration steps together with a conditional check at the end
-* *Stop Virtual Machine*: Powers off the VM before restoration begins using `run_strategy: Halted`
-* *Create Restore*: Creates the VirtualMachineRestore resource with a `wait_timeout` of 600 seconds (10 minutes) since restoration may take longer than the default 120 seconds
-* *Start Virtual Machine*: Powers the VM back on after restoration completes using `run_strategy: Always`
+* *kubernetes.core.k8s_info*: スナップショットの詳細を取得して関連付けられた VM を識別します (`kubevirt_vm_info` は仮想マシンに固有ですが、これは任意の OpenShift リソースの取得を可能にします)。
+* *block*: リストア手順をグループ化し、最後に条件チェックを行います。
+* *Stop Virtual Machine*: リストアが始まる前に、`run_strategy: Halted` を使用して VM の電源をオフにします。
+* *Create Restore*: リストアがデフォルトの 120 秒よりも長くかかる可能性があるため、`wait_timeout` を 600 秒 (10 分) に設定して VirtualMachineRestore リソースを作成します。
+* *Start Virtual Machine*: リストア完了後、`run_strategy: Always` を使用して VM の電源をオンに戻します。
 
-=== Creating and Running the Restore VM Snapshots Job Template
+=== Restore VM Snapshots ジョブテンプレートの作成と実行
 
-. Head to the AAP UI Dashboard, navigate to *Automation Execution → Templates*.
+. AAP UI ダッシュボードにアクセスし、*Automation Execution → Templates* に移動します。
 
-. Click *Create Template* and select *Create job template*.
+. *Create Template* をクリックし、*Create job template* を選択します。
 
-. Fill in the following details, making sure to include the name of the snapshot created previously:
+. 以下の詳細を入力します。以前に作成したスナップショットの名前を含めるように注意してください:
 +
 [cols="2,3",options="header"]
 |===
-| Parameter | Value
-| *Name* | Restore VM Snapshots
-| *Job Type* | Run
-| *Inventory* | OpenShift Virtual Machines
-| *Project* | Workshop Project
-| *Playbook* | solutions/manage_vm_playbook.yml
-| *Execution Environment* | Day2 EE
-| *Credentials* | OpenShift Credential
-| *Extra variables* | `vm_namespace: vms-aap-day2` +
+| パラメーター | 値
+| *名前* | Restore VM Snapshots
+| *ジョブタイプ* | Run
+| *インベントリー* | OpenShift Virtual Machines
+| *プロジェクト* | Workshop Project
+| *プレイブック* | solutions/manage_vm_playbook.yml
+| *実行環境* | Day2 EE
+| *認証情報* | OpenShift Credential
+| *追加変数* | `vm_namespace: vms-aap-day2` +
                       `task_file: restore_vm_snapshots.yml` +
                       `vm_snapshots: <snapshot_name>`
 |===
 +
-WARNING: Replace `<snapshot_name>` with the actual name of your snapshot created previously.
-
-. Click *Create Job Template*.
+警告: `<snapshot_name>` を以前に作成したスナップショットの実際の名前 に置き換えてください。
+. *Create Job Template* をクリックします。
 +
 image::module-01-day-to-day/73-restore-snapshot.png[title="Restore Snapshot Template", link=self, window=blank, width=100%]
 
-. Launch the template by clicking *Launch Template*.
+. *Launch Template* をクリックしてテンプレートを起動します。
+=== スナップショットリストアの確認
 
-=== Verifying Snapshot Restoration
+ジョブが正常に完了したら、リストアが適用されたことを確認します。
 
-Once the Job completes successfully, confirm the restoration was applied.
+.
+OpenShift コンソールに移動し、`vms-aap-day2` プロジェクト内の *Virtualization → VirtualMachines* に移動します。
 
-. Navigate to the OpenShift console and go to *Virtualization → VirtualMachines* within the `vms-aap-day2` project.
+.
+`rhel9-vm1` インスタンスを選択し、*Snapshots* タブをクリックします。
 
-. Select the `rhel9-vm1` instance and click the *Snapshots* tab.
-
-. Locate the snapshot you restored and verify the *Last restored* column shows the recent restoration timestamp.
+.
+リストアしたスナップショットを見つけ、*Last restored* 列に最近のリストアタイムスタンプが表示されていることを確認します。
 +
 image::module-01-day-to-day/74-ocp-restore-snapshot-details.png[title="Restore Snapshot Details", link=self, window=blank, width=100%]
 
-== Summary
+== まとめ
 
-In this module you have spent a day in the life of an OpenShift Virtualization administrator exploring native performance assessment tools in Red Hat OpenShift, and making use of Ansible Automation Platform to automate a number of tasks that many VM's experience often on a day-to-day basis.
+このモジュールでは、OpenShift Virtualization 管理者としての 1 日を過ごし、Red Hat OpenShift のネイティブパフォーマンス評価ツールを探索し、Ansible Automation Platform を使用して、多くの VM が日常的に頻繁に経験する多くのタスクを自動化しました。

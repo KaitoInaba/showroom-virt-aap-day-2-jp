@@ -1,193 +1,225 @@
-= Real World Scaling Scenario
+= 実環境でのスケーリングシナリオ
 
-In this lab module we will be stepping through a scenario that is encountered by many virtualization administrators all over the world each day. We will place our systems under a high level of load, and then using the administrative tools we explored in the first module, assess and remedy the situaiton through variou methods including vertical, and horizontal scaling of resources. 
+このラボモジュールでは、世界中の多くの仮想化管理者が日常的に遭遇するシナリオを段階的に実行します。
+システムに高いレベルの負荷をかけ、最初のモジュールで探求した管理ツールを使用して、リソースの垂直スケーリングと水平スケーリングを含むさまざまな方法で状況を評価し、修正します。
+== モジュールセットアップ
 
-== Module Setup
-
-For this part of the lab we need to make sure that the *loadmaker* application is still running in the *windows-vms* project in our Red Hat OpenShift environment.
-
-. Using the left side navigation menu click on *Workloads* followed by *Deployments*.
-. Make sure to ensure you are in Project: *windows-vms*.
-. You should see one pod deployed here called *loadmaker*.
+このラボのパートでは、Red Hat OpenShift 環境の *windows-vms* プロジェクトで *loadmaker* アプリケーションがまだ実行されていることを確認する必要があります。
+. 左側のナビゲーションメニューを使用して *Workloads*、次に *Deployments* をクリックします。
+.
+プロジェクト: *windows-vms* にいることを確認してください。
+. ここにデプロイされた Pod が 1 つ表示されるはずです。これは *loadmaker* と呼ばれます。
 +
 image::module-02-real-world-scaling/01-select_loadmaker.png[title="Loadmaker Deployment", link=self, window=blank, width=100%]
 +
-. Click on *loadmaker* and it will bring up the *Deployment details* page.
+. *loadmaker* をクリックすると、*Deployment details* ページが表示されます。
 +
 image::module-02-real-world-scaling/02-deploy_details.png[title="Deployment Details", link=self, window=blank, width=100%]
 +
-. Click on *Environment*, you will see a field for *REQUESTS_PER_SECOND*, change the value in the field to `75` if it is not already set, and click the *Save* button at the bottom.
+. *Environment* をクリックすると、*REQUESTS_PER_SECOND* のフィールドが表示されます。まだ設定されていない場合は、値を `75` に変更し、下部の *Save* ボタンをクリックします。
 +
 image::module-02-real-world-scaling/03-lm_pod_config.png[title="LM Pod Config", link=self, window=blank, width=100%]
 +
-. Now lets go check on the VMs that we are generating load against.
-. On the left side navigation menu click on *Virtualization* and then *VirtualMachines*. Select the *windows-vms* project in the center column. You should see three virtual machines: *winweb01*, *winweb02*, and *database*.
+. さて、負荷を生成している VM を確認しに行きましょう。
+.
+左側のナビゲーションメニューで *Virtualization*、次に *VirtualMachines* をクリックします。中央の列で *windows-vms* プロジェクトを選択します。
+3 つの仮想マシンが表示されるはずです: *winweb01*、*winweb02*、および *database*。
 +
 image::module-02-real-world-scaling/04-windows_vms.png[title="Windows VMs", link=self, window=blank, width=100%]
 +
-IMPORTANT: At this point in the lab only *database* and *winweb01* should be powered on. If they are off, please power them on now. Do not power on *winweb02* for the time being.
-
+重要: このラボの時点では、*database* と *winweb01* のみが電源オンになっているはずです。
+もしオフになっている場合は、今すぐ電源をオンにしてください。*winweb02* は当面電源をオンにしないでください。
 [[vm_resource_util]]
-== Examining Resource Utilization on Virtual Machines
+== 仮想マシンのリソース使用率の確認
 
-The winweb01, winweb02, and database servers work together to provide a simple web-based application that load-balances web requests between the two web servers to reduce load and increase performance. At this time, only one webserver is up, and is now under high demand. In this lab section we will see horizontally scaling the webservers can help reduce load on the VMs, and how to diagnose this using metrics, and graphs that are native to OpenShift Virtualization.
-
-. Click on *winweb01* which should currently be running. This will bring you to the *VirtualMachine details* page.
+winweb01、winweb02、および database サーバーは連携して、2 台の Web サーバー間で Web リクエストをロードバランスすることで、負荷を軽減し、パフォーマンスを向上させるシンプルな Web ベースのアプリケーションを提供します。
+現時点では、Web サーバーは 1 台のみ稼働しており、高い需要にさらされています。
+このラボのセクションでは、Web サーバーを水平スケーリングすることが、VM の負荷を軽減するのにどのように役立つか、また OpenShift Virtualization にネイティブなメトリックとグラフを使用してこれを診断する方法を見ていきます。
+. 現在実行中であるはずの *winweb01* をクリックします。これにより *VirtualMachine details* ページが表示されます。
 +
 image::module-02-real-world-scaling/05-vm_details.png[title="VM Details", link=self, window=blank, width=100%]
 +
-. Click on the *metrics* tab and take a quick look at the CPU utilization graph, it should be maxed out.
+. *metrics* タブをクリックし、CPU 使用率グラフをざっと見てください。最大になっているはずです。
 +
 image::module-02-real-world-scaling/06-vm_metrics.png[title="VM Metrics", link=self, window=blank, width=100%]
 +
-. Click on the CPU graph itself to see an expanded version. You will notice that the load on the server is much higher than 1.0, which indicates 100% CPU utilization, and means that the webserver is severely overloaded at this time.
+. CPU グラフ自体をクリックして展開バージョンを表示します。
+サーバーの負荷が 1.0 (CPU 使用率 100%) を大幅に超えていることに気付くでしょう。これは、現時点で Web サーバーがひどく過負荷であることを意味します。
 +
 image::module-02-real-world-scaling/07-cpu_util_load.png[title="CPU Utilization and Load", link=self, window=blank, width=100%]
 
 [[horz_scale_vm]]
-== Horizontally Scaling VM Resources
+== VM リソースの水平スケーリング
 
-. Return to the list of virtual machines by clicking on *VirtualMachines* in the left side navigation menu, and click on the *winweb02* virtual machine. Notice the VM is still in the *Stopped* state. Use the *Play* button in the upper right corner to start the virtual machine.
+.
+左側のナビゲーションメニューの *VirtualMachines* をクリックして仮想マシンのリストに戻り、*winweb02* 仮想マシンをクリックします。
+VM がまだ *Stopped* 状態であることに注意してください。右上隅の *Play* ボタンを使用して仮想マシンを起動します。
 +
 image::module-02-real-world-scaling/08-power_on.png[title="Power On Winweb02", link=self, window=blank, width=100%]
 +
-. Return to the *Metrics* tab of the *winweb01* virtual machine, and click on it's *CPU* graph again. We should see the load begin to gradually come down.
+. *winweb01* 仮想マシンの *Metrics* タブに戻り、もう一度その *CPU* グラフをクリックします。
+負荷が徐々に下がり始めるはずです。
 +
 image::module-02-real-world-scaling/09-load_reducing.png[title="Load Reducing", link=self, window=blank, width=100%]
 +
-. Add a query to also graph the load on *winweb02* at the same time by clicking the *Add query* button, and pasting the following syntax:
+.
+*Add query* ボタンをクリックし、以下の構文を貼り付けて、*winweb02* の負荷も同時にグラフ化します:
 +
 [source,sh,role=execute]
 ----
 sum(rate(kubevirt_vmi_cpu_usage_seconds_total{name='winweb02',namespace='windows-vms'}[5m])) BY (name, namespace)
 ----
 +
-. Click the *Run queries* button and examine the updated graph that appears.
+.
+*Run queries* ボタンをクリックし、更新されたグラフを確認します。
 +
 image::module-02-real-world-scaling/10-load_sharing.png[title="Load Sharing", link=self, window=blank, width=100%]
 
-We can see by examining the graphs that *winweb02* is now under much more load than *winweb01* but over the next 5 minutes or so the load will level out and balance on the two virtual machines. 
-
+グラフを確認すると、*winweb02* が *winweb01* よりもはるかに大きな負荷にさらされていることがわかりますが、その後 5 分ほどで負荷は均等になり、2 台の仮想マシン間でバランスが取れるでしょう。
 [[vert_scale_vm]]
-== Vertically Scaling VM Resources
+== VM リソースの垂直スケーリング
 
-Even with the load evening out on the VM's over a 5 minute interval, we can still see that they are under fairly high load. Without the ability to scale further horizontally the only option that remains is to scale vertically by adding CPU and Memory resources to the VMs. Luckily as we explored in the previous module, this can be done by hot-plugging these resources, and not affect the workload as it's currently running. 
-
-. Start by examining the graph on the metrics page from the previous section. You can set the refresh interval to the last 5 minutes with the dropdown in the upper left corner. Note that the load on the two virtual guests is holding steady near 1.0, which signifies that both guests are still pretty overwhelmed.
+5 分間隔で VM の負荷が均等になったとしても、依然としてかなり高い負荷がかかっていることがわかります。
+これ以上水平スケーリングを行う能力がない場合、残された唯一の選択肢は、CPU とメモリーリソースを VM に追加することで**垂直スケーリング**を行うことです。
+幸いなことに、前のモジュールで探求したように、これはこれらのリソースを**ホットプラグ**することで実行でき、現在実行中のワークロードに影響を与えることはありません。
+. 前のセクションのメトリックページにあるグラフを確認することから始めます。
+左上隅のドロップダウンを使用して、更新間隔を過去 5 分に設定できます。
+2 つの仮想ゲストの負荷が 1.0 付近で安定しており、両方のゲストが依然としてかなり圧倒されていることを示していることに注意してください。
 +
 image::module-02-real-world-scaling/11-balanced_load.png[title="Balanced Load", link=self, window=blank, width=100%]
 +
-. Navigate back to the virtual machine list by clicking on *VirtualMachines* on the left side navigation menu, and click on *winweb01*.
+. 左側のナビゲーションメニューの *VirtualMachines* をクリックして仮想マシンリストに戻り、*winweb01* をクリックします。
 +
 image::module-02-real-world-scaling/12-select_vm.png[title="Select VM", link=self, window=blank, width=100%]
 +
-. Click on the *Configuration* tab for the VM, and under *VirtualMachine details* find the section for *CPU|Memory* and click the pencil icon to edit.
+. VM の *Configuration* タブをクリックし、*VirtualMachine details* の下の *CPU|Memory* セクションを見つけ、鉛筆アイコンをクリックして編集します。
 +
 image::module-02-real-world-scaling/13-edit_vm.png[title="Edit VM", link=self, window=blank, width=100%]
 +
-. Increase the vCPUs to *4* and click the *Save* button.
+. vCPU を *4* に増やし、*Save* ボタンをクリックします。
 +
 image::module-02-real-world-scaling/14-update_specs.png[title="Update Specs", link=self, window=blank, width=100%]
 +
-. Click back on the *Overview* tab. You will see that the CPU | Memory section in the details has been updated to the new value, and that the CPU utilization on the guest gradually drops quite quickly.
+.
+*Overview* タブに戻ります。詳細の *CPU|Memory* セクションが新しい値に更新されており、ゲストの CPU 使用率が徐々にかなり速く低下していることがわかるでしょう。
 +
 image::module-02-real-world-scaling/15-vm_new_spec.png[title="New VM Spec", link=self, window=blank, width=100%]
 +
-. Repeat these steps for *winweb02*.
-. Once both vms are upgraded, click on *windows-vms* project. You will see that the CPU usage dropped dramatically.
+. *winweb02* についてもこれらの手順を繰り返します。
+.
+両方の VM がアップグレードされたら、*windows-vms* プロジェクトをクリックします。CPU 使用率が劇的に低下したことがわかるでしょう。
 +
 image::module-02-real-world-scaling/16-updated_usage.png[title="Updated Utilization", link=self, window=blank, width=100%]
 +
-. Click on *winweb01* and then click on the *Metrics* tab and the *CPU* graph to view how the utilization graph now looks. You can also re-add the query from *winweb02* and see that both graphs came down quite rapidly after the resources on each guest were increased, and the load on each VM is so much less than before.
+. *winweb01* をクリックし、次に *Metrics* タブと *CPU* グラフをクリックして、使用率グラフが現在どのように見えるかを確認します。
+*winweb02* からのクエリを再度追加することもでき、各ゲストのリソースが増加した後、両方のグラフが非常に急速に低下し、各 VM の負荷が以前よりもはるかに少なくなったことがわかります。
 +
 image::module-02-real-world-scaling/17-updated_usage_verify.png[title="Verify Metrics", link=self, window=blank, width=100%]
 
 [[swap_mem]]
-== Discussing Swap/Memory Overcommit
+== スワップ/メモリーのオーバーコミットに関する考察
 
-NOTE: This section of the lab is just informative for what we may do in a scenario where we find ourselves out of physical cluster resources. Please read the following information.
+NOTE: このラボのセクションは、物理クラスターリソースが不足している状況で実行する可能性があることに関する情報提供のみを目的としています。
+以下の情報をお読みください。
 
-Some times you don't have the ability to increase CPU or memory resources to a specific workload because you have exhausted all of your physical resources. By default, OpenShift has an overcommit ratio of 10:1 for CPU, however memory in a Kubernetes environment is often a finite resource.
-
-When a normal kubernetes cluster encounters an out of memory scenario due to high workload resource utilization, it begins to kills pods indescriminately. In a container-based application environment, this is usually mitigated by having multiple replicas of an application behind a load balancer service. The application stays available served by other replicas, and the killed pod is reassigned to a node with free resources.
-
-This doesn't work that well for virtual machine workloads which in most cases are not composed of many replicas, and need to be persistently available.
-
-If you have exhausted the physical resources in your cluster the traditional option is to scale the cluster, but many times this is much easier said than done. If you don't have a spare physical node on standby to scale, and have to order new hardware, you can often be delayed by procurement procedures or supply chain disruptions.
-
-One workaround for this is to temporarily enable SWAP/Memory Overcommit on your nodes so that you can buy time until the new hardware arrives, this allows for the worker nodes to SWAP and use hard disk space to write application memory. While writing to hard disk is much much slower than writing to system memory, it does allow to preserve workloads until additional resources can arrive.
-
+物理リソースをすべて使い果たしたため、特定のワークロードの CPU またはメモリーリソースを増やす能力がない場合があります。
+デフォルトでは、OpenShift の CPU のオーバーコミット比率は 10:1 ですが、Kubernetes 環境のメモリーは多くの場合有限のリソースです。
+通常の Kubernetes クラスターが高いワークロードリソース使用率のためにメモリー不足のシナリオに遭遇すると、無差別に Pod を強制終了し始めます。
+コンテナーベースのアプリケーション環境では、これは通常、ロードバランサーサービスの背後にアプリケーションの複数のレプリカを持つことで軽減されます。
+アプリケーションは他のレプリカによって提供され続け、強制終了された Pod は空きリソースを持つノードに再割り当てされます。
+これは、ほとんどの場合、多数のレプリカで構成されておらず、永続的に利用可能である必要がある仮想マシンワークロードにはあまり効果的ではありません。
+クラスター内の物理リソースを使い果たした場合の従来の手段は、クラスターをスケーリングすることですが、これは言うは易く行うは難しの場合が多くあります。
+予備の物理ノードが待機しておらず、新しいハードウェアを注文する必要がある場合、調達手順やサプライチェーンの混乱によって遅延することがよくあります。
+これに対する 1 つの回避策は、新しいハードウェアが到着するまで時間を稼ぐために、一時的にノードで SWAP/メモリーのオーバーコミットを有効にすることです。これにより、ワーカーノードが SWAP し、ハードディスクスペースを使用してアプリケーションメモリーを書き込むことができます。
+ハードディスクへの書き込みはシステムメモリーへの書き込みよりもはるかに遅いですが、追加のリソースが到着するまでワークロードを維持することができます。
 [[scaling_cluster]]
-== Scaling a Cluster By Adding a Node.
+== ノードを追加することによるクラスターのスケーリング。
 
-The primary recourse when you have run out of physical resources on the cluster is the scale the cluster by adding additional worker nodes. This can then allow for workloads that are failing or cannot be assigned to be assigned successfully. This section of the lab is dedicated to just this idea, we will overload our cluster, and then add a new node to allow all VMs to run successfully.
+クラスターの物理リソースが不足した場合の主な手段は、追加のワーカーノードを追加してクラスターをスケーリングすることです。
+これにより、失敗しているワークロードや割り当てることができないワークロードを正常に割り当てることができるようになります。
+このラボのセクションはまさにこの考えに特化しており、クラスターに過負荷をかけ、新しいノードを追加してすべての VM が正常に実行できるようにします。
+NOTE: このラボ環境では、実際に追加の物理ノードを追加しているわけではなく、VM ワークロードを許可しないようにテイントされた待機中のノードを用意することで動作をシミュレートしています。
+適切なタイミングでこのテイントを削除することで、クラスターへの新しいノードの追加をシミュレートします。
 
-NOTE: In this lab environment we are not actually adding an additional physical node, we are simulating the behavior by having a node on standby which is tainted to not allow VM workloads. At the appropriate time we will remove this taint, thus simulating the addition a new node to our cluster.
-
-. In the left side navigation menu, click on *Virtualization* and then *VirtalMachines*. 
-. Ensure that all VMs in *vms-aap-day2* and *windows-vms* projects are powered on. 
+.
+左側のナビゲーションメニューで、*Virtualization*、次に *VirtalMachines* をクリックします。
+.
+*vms-aap-day2* および *windows-vms* プロジェクトのすべての VM の電源がオンになっていることを確認します。
 +
 image::module-02-real-world-scaling/18-verify_oc.png[title="Verify Running VMs", link=self, window=blank, width=100%]
 +
-. Click on the *mass-vm* project to list the virtual machines there. Click on *1 - 15 of 30* drop down and change it to *50 per page* to display all of the VMs.
+.
+*mass-vm* プロジェクトをクリックして、そこにある仮想マシンを一覧表示します。
+*1 - 15 of 30* ドロップダウンをクリックし、*50 per page* に変更してすべての VM を表示します。
 +
 image::module-02-real-world-scaling/19-project_mass.png[title="Mass VMs Project", link=self, window=blank, width=100%]
 +
-. Click on the Check box under the *Filter* dropdown to select all VMs in the project. Click on the *Actions* button and select *Start* from the dropdown menu.
+. *Filter* ドロップダウンの下にあるチェックボックスをクリックして、プロジェクト内のすべての VM を選択します。
+*Actions* ボタンをクリックし、ドロップダウンメニューから *Start* を選択します。
 +
 image::module-02-real-world-scaling/20-select_all_start.png[title="Start All VMs", link=self, window=blank, width=100%]
 +
-. Once all of the VMs attempt to power on, there should be approximently 6-7 VMs that are currently in an error state.
+.
+すべての VM が起動しようとすると、約 6〜7 台の VM が現在エラー状態になっているはずです。
 +
 image::module-02-real-world-scaling/21-after_start.png[title="VMs After Startup", link=self, window=blank, width=100%]
 +
-. Click on the number of errors to see an explanation for the error state.
+. エラーの数をクリックして、エラー状態の説明を確認します。
 +
 image::module-02-real-world-scaling/22-num_errors.png[title="Error Details", link=self, window=blank, width=100%]
 +
-. Each of these VMs will show a *ErrorUnschedulable* in the status column, because the cluster is out of resources to schedule them.
-. In the left side navigation menu, click on *Compute* then click on *Nodes*. See that three of the worker nodes (nodes 2-4) have a large number of assigned pods, and a large amount of used memory, while worker node 1 is using much less by comparison. 
+. これらの VM はそれぞれ、クラスターがそれらをスケジュールするためのリソース不足のため、ステータス列に *ErrorUnschedulable* を表示するでしょう。
+. 左側のナビゲーションメニューで、*Compute*、次に *Nodes* をクリックします。
+3 つのワーカーノード（ノード 2〜4）には多数の割り当てられた Pod と大量の使用済みメモリーがあり、ワーカーノード 1 はそれと比較して使用量がはるかに少ないことがわかります。
 +
 image::module-02-real-world-scaling/23-worker_nodes.png[title="Nodes", link=self, window=blank, width=100%]
 +
-NOTE: In an OpenShift environment, the memory available is calculated based on memory requests submitted by each pod, i
-n this way the memory a pod needs is guaranteed, even if the pod is not using that amount at the time. This is why each
- of these worker nodes are considered "full" even though they only show about 75% utilization when we look.
+NOTE: OpenShift 環境では、利用可能なメモリーは各 Pod によって提出されたメモリー要求に基づいて計算されます。
+このようにして、Pod がその時点でその量を使用していなくても、Pod が必要とするメモリーは保証されます。
+これが、これらのワーカーノードがそれぞれ、見ても約 75% の使用率しか示していないにもかかわらず、「満杯」と見なされる理由です。
 +
-. Click on worker node 2, you will be taken to the *Node details* page. Notice there are warnings about limited resources available on the node. You can also see the graph of memory utilization for the node, which shows the used memory in blue, and the requested amount as an orange dashed line as well.
+. ワーカーノード 2 をクリックすると、*Node details* ページに移動します。
+ノードで利用可能なリソースが制限されていることに関する警告があることに注意してください。
+使用済みメモリーが青色で表示され、要求された量がオレンジ色の破線としても表示される、ノードのメモリー使用率のグラフも確認できます。
 +
 image::module-02-real-world-scaling/24-worker_node_2.png[title="Worker Node 2 Details", link=self, window=blank, width=100%]
 +
-. Click on the *Pods* tab at the top, and in the search bar, type `virt-launcher` to search for VMs on the node.
+. 上部の *Pods* タブをクリックし、検索バーに `virt-launcher` と入力して、ノード上の VM を検索します。
 +
 image::module-02-real-world-scaling/25-vms_on_node_2.png[title="VMs On Worker Node 2", link=self, window=blank, width=100%]
 +
-. Now, click on *Nodes* in the left-side navigation menu, and then click on worker node 1 which will bring you to it's *Node details* page. Notice there are no CPU or Memory warnings currently on the node. 
+. 次に、左側のナビゲーションメニューの *Nodes* をクリックし、次にワーカーノード 1 をクリックすると、その *Node details* ページに移動します。
+現在、ノードに CPU またはメモリーの警告がないことに注意してください。
 +
 image::module-02-real-world-scaling/26-worker_node_1.png[title="Worker Node 1 Details", link=self, window=blank, width=100%]
 +
-. Click on the *Pods* tab at the top, and in the search bar, type `virt-launcher` to search VMs on the node. Notice that there are currently none.
+.
+上部の *Pods* タブをクリックし、検索バーに `virt-launcher` と入力してノード上の VM を検索します。
+現在、VM がないことに注意してください。
 +
 image::module-02-real-world-scaling/27-vms_on_node_1.png[title="VMs On Worker Node 1", link=self, window=blank, width=100%]
 +
-. Click on the *Details* tab, and scroll down until until you see the *Taints* section where there is one taint defined.
+.
+*Details* タブをクリックし、スクロールダウンして *Taints* セクションが表示されるまで移動します。そこには 1 つのテイントが定義されています。
 +
 image::module-02-real-world-scaling/28-node_details.png[title="Node Details", link=self, window=blank, width=100%]
 +
 image::module-02-real-world-scaling/29-select_taints.png[title="Select Taints", link=self, window=blank, width=100%]
 +
-. Click on the *pencil* icon to bring up a box to edit the current *Taint* on the node. When the box appears, click on the *-* next to the taint definition to remove it and click the *Save* button.
+. *鉛筆*アイコンをクリックして、ノード上の現在の *Taint* を編集するためのボックスを表示します。
+ボックスが表示されたら、テイント定義の横にある *-* をクリックして削除し、*Save* ボタンをクリックします。
 +
 image::module-02-real-world-scaling/30-remove_taint.png[title="Remove Taint", link=self, window=blank, width=100%]
 +
-. Once the taint is removed, scroll back to the top and click on the *Pods* tab again and type `virt-launcher` into the search bar once more, you will see the unscheduleable VMs are being assigned to this node now.
+. テイントが削除されたら、上部に戻って *Pods* タブをもう一度クリックし、検索バーに `virt-launcher` と入力すると、スケジュール不可能だった VM がこのノードに割り当てられていることがわかります。
 +
 image::module-02-real-world-scaling/31-vms_node1_untainted.png[title="VMs On Worker Node 1", link=self, window=blank, width=100%]
 +
-. Return to the list of VMs in the *mass-vms* project by clicking on *Virtualization* and then clicking on *VirtualMachines* in the left side navigation menu to see all of the VMs now running.
+. 左側のナビゲーションメニューの *Virtualization*、次に *VirtualMachines* をクリックして *mass-vms* プロジェクトの VM のリストに戻り、すべての VM が実行中になっていることを確認します。
 +
 image::module-02-real-world-scaling/32-mass_vms_running.png[title="Mass VMs Running", link=self, window=blank, width=100%]
 
-== Summary
+== まとめ
 
-In this module you have worked as an OpenShift Virtulization administrator dealing with a high load scenario which you were able to remediate by horizontally and vertically scaling virtual machine resources. You also were able to solve an issue where you had run low on physical cluster resources and were unable to provision new virtual machines by scaling up your cluster to provide additional resources.
+このモジュールでは、OpenShift Virtualization 管理者として、高い負荷のシナリオに対処し、仮想マシンリソースを**水平スケーリング**および**垂直スケーリング**することで解決できました。
+また、物理クラスターリソースが不足し、新しい仮想マシンをプロビジョニングできなかった問題を、クラスターをスケールアップして追加のリソースを提供することで解決することができました。
