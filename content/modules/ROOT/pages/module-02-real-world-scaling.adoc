@@ -5,9 +5,9 @@
 == モジュールセットアップ
 
 このラボのパートでは、Red Hat OpenShift 環境の *windows-vms* プロジェクトで *loadmaker* アプリケーションがまだ実行されていることを確認する必要があります。
+
 . 左側のナビゲーションメニューを使用して *Workloads*、次に *Deployments* をクリックします。
-.
-プロジェクト: *windows-vms* にいることを確認してください。
+. プロジェクト: *windows-vms* にいることを確認してください。
 . ここにデプロイされた Pod が 1 つ表示されるはずです。これは *loadmaker* と呼ばれます。
 +
 image::module-02-real-world-scaling/01-select_loadmaker.png[title="Loadmaker Deployment", link=self, window=blank, width=100%]
@@ -21,8 +21,7 @@ image::module-02-real-world-scaling/02-deploy_details.png[title="Deployment Deta
 image::module-02-real-world-scaling/03-lm_pod_config.png[title="LM Pod Config", link=self, window=blank, width=100%]
 +
 . さて、負荷を生成している VM を確認しに行きましょう。
-.
-左側のナビゲーションメニューで *Virtualization*、次に *VirtualMachines* をクリックします。中央の列で *windows-vms* プロジェクトを選択します。
+. 左側のナビゲーションメニューで *Virtualization*、次に *VirtualMachines* をクリックします。中央の列で *windows-vms* プロジェクトを選択します。
 3 つの仮想マシンが表示されるはずです: *winweb01*、*winweb02*、および *database*。
 +
 image::module-02-real-world-scaling/04-windows_vms.png[title="Windows VMs", link=self, window=blank, width=100%]
@@ -30,11 +29,13 @@ image::module-02-real-world-scaling/04-windows_vms.png[title="Windows VMs", link
 重要: このラボの時点では、*database* と *winweb01* のみが電源オンになっているはずです。
 もしオフになっている場合は、今すぐ電源をオンにしてください。*winweb02* は当面電源をオンにしないでください。
 [[vm_resource_util]]
+
 == 仮想マシンのリソース使用率の確認
 
 winweb01、winweb02、および database サーバーは連携して、2 台の Web サーバー間で Web リクエストをロードバランスすることで、負荷を軽減し、パフォーマンスを向上させるシンプルな Web ベースのアプリケーションを提供します。
 現時点では、Web サーバーは 1 台のみ稼働しており、高い需要にさらされています。
 このラボのセクションでは、Web サーバーを水平スケーリングすることが、VM の負荷を軽減するのにどのように役立つか、また OpenShift Virtualization にネイティブなメトリックとグラフを使用してこれを診断する方法を見ていきます。
+
 . 現在実行中であるはずの *winweb01* をクリックします。これにより *VirtualMachine details* ページが表示されます。
 +
 image::module-02-real-world-scaling/05-vm_details.png[title="VM Details", link=self, window=blank, width=100%]
@@ -51,8 +52,7 @@ image::module-02-real-world-scaling/07-cpu_util_load.png[title="CPU Utilization 
 [[horz_scale_vm]]
 == VM リソースの水平スケーリング
 
-.
-左側のナビゲーションメニューの *VirtualMachines* をクリックして仮想マシンのリストに戻り、*winweb02* 仮想マシンをクリックします。
+. 左側のナビゲーションメニューの *VirtualMachines* をクリックして仮想マシンのリストに戻り、*winweb02* 仮想マシンをクリックします。
 VM がまだ *Stopped* 状態であることに注意してください。右上隅の *Play* ボタンを使用して仮想マシンを起動します。
 +
 image::module-02-real-world-scaling/08-power_on.png[title="Power On Winweb02", link=self, window=blank, width=100%]
@@ -62,26 +62,26 @@ image::module-02-real-world-scaling/08-power_on.png[title="Power On Winweb02", l
 +
 image::module-02-real-world-scaling/09-load_reducing.png[title="Load Reducing", link=self, window=blank, width=100%]
 +
-.
-*Add query* ボタンをクリックし、以下の構文を貼り付けて、*winweb02* の負荷も同時にグラフ化します:
+. *Add query* ボタンをクリックし、以下の構文を貼り付けて、*winweb02* の負荷も同時にグラフ化します:
 +
 [source,sh,role=execute]
 ----
 sum(rate(kubevirt_vmi_cpu_usage_seconds_total{name='winweb02',namespace='windows-vms'}[5m])) BY (name, namespace)
 ----
 +
-.
-*Run queries* ボタンをクリックし、更新されたグラフを確認します。
+. *Run queries* ボタンをクリックし、更新されたグラフを確認します。
 +
 image::module-02-real-world-scaling/10-load_sharing.png[title="Load Sharing", link=self, window=blank, width=100%]
 
 グラフを確認すると、*winweb02* が *winweb01* よりもはるかに大きな負荷にさらされていることがわかりますが、その後 5 分ほどで負荷は均等になり、2 台の仮想マシン間でバランスが取れるでしょう。
 [[vert_scale_vm]]
+
 == VM リソースの垂直スケーリング
 
 5 分間隔で VM の負荷が均等になったとしても、依然としてかなり高い負荷がかかっていることがわかります。
 これ以上水平スケーリングを行う能力がない場合、残された唯一の選択肢は、CPU とメモリーリソースを VM に追加することで**垂直スケーリング**を行うことです。
 幸いなことに、前のモジュールで探求したように、これはこれらのリソースを**ホットプラグ**することで実行でき、現在実行中のワークロードに影響を与えることはありません。
+
 . 前のセクションのメトリックページにあるグラフを確認することから始めます。
 左上隅のドロップダウンを使用して、更新間隔を過去 5 分に設定できます。
 2 つの仮想ゲストの負荷が 1.0 付近で安定しており、両方のゲストが依然としてかなり圧倒されていることを示していることに注意してください。
@@ -100,14 +100,12 @@ image::module-02-real-world-scaling/13-edit_vm.png[title="Edit VM", link=self, w
 +
 image::module-02-real-world-scaling/14-update_specs.png[title="Update Specs", link=self, window=blank, width=100%]
 +
-.
-*Overview* タブに戻ります。詳細の *CPU|Memory* セクションが新しい値に更新されており、ゲストの CPU 使用率が徐々にかなり速く低下していることがわかるでしょう。
+. *Overview* タブに戻ります。詳細の *CPU|Memory* セクションが新しい値に更新されており、ゲストの CPU 使用率が徐々にかなり速く低下していることがわかるでしょう。
 +
 image::module-02-real-world-scaling/15-vm_new_spec.png[title="New VM Spec", link=self, window=blank, width=100%]
 +
 . *winweb02* についてもこれらの手順を繰り返します。
-.
-両方の VM がアップグレードされたら、*windows-vms* プロジェクトをクリックします。CPU 使用率が劇的に低下したことがわかるでしょう。
+. 両方の VM がアップグレードされたら、*windows-vms* プロジェクトをクリックします。CPU 使用率が劇的に低下したことがわかるでしょう。
 +
 image::module-02-real-world-scaling/16-updated_usage.png[title="Updated Utilization", link=self, window=blank, width=100%]
 +
@@ -141,15 +139,12 @@ NOTE: このラボのセクションは、物理クラスターリソースが�
 NOTE: このラボ環境では、実際に追加の物理ノードを追加しているわけではなく、VM ワークロードを許可しないようにテイントされた待機中のノードを用意することで動作をシミュレートしています。
 適切なタイミングでこのテイントを削除することで、クラスターへの新しいノードの追加をシミュレートします。
 
-.
-左側のナビゲーションメニューで、*Virtualization*、次に *VirtalMachines* をクリックします。
-.
-*vms-aap-day2* および *windows-vms* プロジェクトのすべての VM の電源がオンになっていることを確認します。
+. 左側のナビゲーションメニューで、*Virtualization*、次に *VirtalMachines* をクリックします。
+. *vms-aap-day2* および *windows-vms* プロジェクトのすべての VM の電源がオンになっていることを確認します。
 +
 image::module-02-real-world-scaling/18-verify_oc.png[title="Verify Running VMs", link=self, window=blank, width=100%]
 +
-.
-*mass-vm* プロジェクトをクリックして、そこにある仮想マシンを一覧表示します。
+. *mass-vm* プロジェクトをクリックして、そこにある仮想マシンを一覧表示します。
 *1 - 15 of 30* ドロップダウンをクリックし、*50 per page* に変更してすべての VM を表示します。
 +
 image::module-02-real-world-scaling/19-project_mass.png[title="Mass VMs Project", link=self, window=blank, width=100%]
@@ -159,8 +154,7 @@ image::module-02-real-world-scaling/19-project_mass.png[title="Mass VMs Project"
 +
 image::module-02-real-world-scaling/20-select_all_start.png[title="Start All VMs", link=self, window=blank, width=100%]
 +
-.
-すべての VM が起動しようとすると、約 6〜7 台の VM が現在エラー状態になっているはずです。
+. すべての VM が起動しようとすると、約 6〜7 台の VM が現在エラー状態になっているはずです。
 +
 image::module-02-real-world-scaling/21-after_start.png[title="VMs After Startup", link=self, window=blank, width=100%]
 +
@@ -193,14 +187,12 @@ image::module-02-real-world-scaling/25-vms_on_node_2.png[title="VMs On Worker No
 +
 image::module-02-real-world-scaling/26-worker_node_1.png[title="Worker Node 1 Details", link=self, window=blank, width=100%]
 +
-.
-上部の *Pods* タブをクリックし、検索バーに `virt-launcher` と入力してノード上の VM を検索します。
+. 上部の *Pods* タブをクリックし、検索バーに `virt-launcher` と入力してノード上の VM を検索します。
 現在、VM がないことに注意してください。
 +
 image::module-02-real-world-scaling/27-vms_on_node_1.png[title="VMs On Worker Node 1", link=self, window=blank, width=100%]
 +
-.
-*Details* タブをクリックし、スクロールダウンして *Taints* セクションが表示されるまで移動します。そこには 1 つのテイントが定義されています。
+. *Details* タブをクリックし、スクロールダウンして *Taints* セクションが表示されるまで移動します。そこには 1 つのテイントが定義されています。
 +
 image::module-02-real-world-scaling/28-node_details.png[title="Node Details", link=self, window=blank, width=100%]
 +
