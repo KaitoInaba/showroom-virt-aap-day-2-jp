@@ -6,6 +6,7 @@ image::conclusion/00_Thank_You.png[link=self, window=blank, width=100%]
 
 * OpenShift Virtualization はソリューション指向であり、使い始めるのが簡単な、成熟し、安定し、スケーラブルなソリューションを提供します。
 * Ansible Automation Platform は、仮想マシン環境の多くの機能を大規模に自動化および管理する機能を提供するエンタープライズツールです。
+
 [[additional_info]]
 == 追加情報
 

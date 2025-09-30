@@ -27,7 +27,7 @@ image::module-01-day-to-day/02-aap_login.png[title="AAP Login", link=self, windo
 この機会に両方のコンソールを開いてログインし、ラボの準備をしてください。
 
 [[dynamic_inventory]]
-== OpenShift 仮想マシン向けの動的インベントリーの作成
+== OpenShift 上の仮想マシン向けの動的インベントリーの作成
 
 目的:
 
@@ -144,6 +144,7 @@ SUCCESS => {
 image::module-01-day-to-day/14-ping_success.png[title="Ping Success", link=self, window=blank, width=100%]
 +
 NOTE: OpenShift コンソールにログインし、仮想マシンを手動で確認することで、VM が実行されていることを手動で確認することもできます。
+
 === OpenShift コンソールでの VM インベントリーの確認
 . OpenShift 管理コンソールウィンドウに切り替えます。
 . 左側のナビゲーションメニューで、*Virtualization* をクリックし、次に *VirtualMachines* をクリックします。
@@ -810,7 +811,7 @@ Workshop Credential, Vault Credential
 
 |===
 +
-重要: 2 つの認証情報が添付されており、特権昇格が有効になっていることに注意してください。
+IMPORTANT: 2 つの認証情報が添付されており、特権昇格が有効になっていることに注意してください。
 +
 . フォームに記入したら、*Create job template* ボタンをクリックします。
 +
@@ -992,9 +993,11 @@ OpenShift Virtualization の仮想マシンスナップショットは、アタ�
 * リストア自動化タスク (*restore_vm_snapshots.yml* および *_restore_vm_snapshot.yml*) は、VM の停止、リストア、再起動を含む完全なリストアワークフローを管理するために事前に作成されています。
 * *manage_vm_playbook.yml* プレイブックは、VM のスナップショットを取得するかリストアするかに基づく入力変数に基づいて、これらのタスクを実行するようにすでに設定されています。
 これらのファイルを作成または変更する必要はありませんが、Ansible Automation Platform でジョブテンプレートを作成するときに参照するため、それらがどのように機能するかを理解することが重要です。
+
 === 提供されているスナップショットタスクファイルの理解
 
 スナップショット自動化では、1 つのタスクファイルがループを使用して複数のスナップショットを処理し、インクルードタスクファイルが個々の VM スナップショットを取得するという 2 層のアプローチを使用します。
+
 === snapshot_vms.yml
 
 このメインのタスクファイルは、コンマ区切りの VM 名文字列を処理し、Ansible のループ機能を使用して VM ごとに個別のスナップショットタスクを作成します。
@@ -1017,6 +1020,7 @@ default('', True) | length > 0
 * *loop*: コンマ区切りの VM 名を処理し、スペースを削除し、Jinja2 関数を使用してリストを作成します
 * *loop_control/loop_var*: ループの各反復の変数名 (`vm_to_snapshot`) を設定します
 * *ansible.builtin.include_tasks*: スナップショットプロセスを完了するために必要なステップ (タスク) をキャプチャする、インクルードされたタスクファイル `_snapshot_vm.yml` を VM ごとに呼び出します。
+
 === _snapshot_vm.yml
 
 アンダースコア "_" で始まるタスクファイルは、別のタスクファイル内にインクルードされていることを示します。
@@ -1113,6 +1117,7 @@ length == 1"
 image::module-01-day-to-day/71-create-snapshot.png[title="Create Snapshot Template", link=self, window=blank, width=100%]
 +
 . 右上隅から *Launch Template* を選択してジョブを起動します。
+
 === スナップショット作成の確認
 
 ジョブが正常に完了したら、新しいスナップショットが作成されたことを確認します。
@@ -1258,7 +1263,7 @@ length == 1"
                       `vm_snapshots: <snapshot_name>`
 |===
 +
-警告: `<snapshot_name>` を以前に作成したスナップショットの実際の名前 に置き換えてください。
+WARNING: `<snapshot_name>` を以前に作成したスナップショットの実際の名前 に置き換えてください。
 . *Create Job Template* をクリックします。
 +
 image::module-01-day-to-day/73-restore-snapshot.png[title="Restore Snapshot Template", link=self, window=blank, width=100%]
