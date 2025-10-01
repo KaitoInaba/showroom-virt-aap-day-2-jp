@@ -1227,15 +1227,15 @@ length == 1"
 +
 [cols="2,3",options="header"]
 |===
-| パラメーター | 値
-| *名前* | Restore VM Snapshots
-| *ジョブタイプ* | Run
-| *インベントリー* | OpenShift Virtual Machines
-| *プロジェクト* | Workshop Project
-| *プレイブック* | solutions/manage_vm_playbook.yml
-| *実行環境* | Day2 EE
-| *認証情報* | OpenShift Credential
-| *追加変数* | `vm_namespace: vms-aap-day2` +
+| Parameter | Value
+| *Name* | Restore VM Snapshots
+| *Job Type* | Run
+| *Inventory* | OpenShift Virtual Machines
+| *Project* | Workshop Project
+| *Playbook* | solutions/manage_vm_playbook.yml
+| *Execution Environment* | Day2 EE
+| *Credentials* | OpenShift Credential
+| *Extra variables* | `vm_namespace: vms-aap-day2` +
                       `task_file: restore_vm_snapshots.yml` +
                       `vm_snapshots: <snapshot_name>`
 |===
