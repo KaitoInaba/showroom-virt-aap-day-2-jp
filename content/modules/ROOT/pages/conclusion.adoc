@@ -17,7 +17,7 @@ image::conclusion/00_Thank_You.png[link=self, window=blank, width=100%]
 * 組織全体で多数の利点を活用してください。
 * イノベーションのための**一貫した基盤**をデプロイする方法を学んでください。
 * **無償のデモンストレーション**または**仮想移行アセスメント**を通じて開始する方法を学んでください。
-このリンク https://www.redhat.com/en/resources/15-reasons-adopt-openshift-virtualization-ebook[here^] をクリックして今すぐお読みください。
+https://www.redhat.com/en/resources/15-reasons-adopt-openshift-virtualization-ebook[このリンク^] をクリックして今すぐお読みください。
 
 
 === 無料 Ebook: Red Hat Ansible Automation Platform: 初心者向けガイド
@@ -26,7 +26,7 @@ image::conclusion/00_Thank_You.png[link=self, window=blank, width=100%]
 * 組織に自動化を統合することのビジネス価値を探ってください。
 * Ansible Automation Platform がさまざまなパートナーとどのように連携するかについて学んでください。
 * 自動化されたワークフローを採用するための戦略を探ってください。
-このリンク https://www.redhat.com/en/resources/ansible-automation-platform-beginners-guide-ebook[here^] をクリックして今すぐお読みください。
+https://www.redhat.com/en/resources/ansible-automation-platform-beginners-guide-ebook[このリンク^] をクリックして今すぐお読みください。
 
 
 === Red Hat Learning Services: DO317 Red Hat OpenShift Virtualization を使用した仮想マシンの管理
@@ -36,7 +36,7 @@ image::conclusion/00_Thank_You.png[link=self, window=blank, width=100%]
 * 標準の Kubernetes 機能と OpenShift Virtualization からの拡張機能を使用した VM の高可用性 (HA) を管理するためのサンプルアーキテクチャ。
 * ストレージやデータベースなど、OpenShift クラスター外のデータセンターサービスに OpenShift 上の VM を接続するための戦略。
 * Migration Toolkit for Virtualization オペレーターを使用して、互換性のあるハイパーバイザーから OpenShift Virtualization に VM を移行するための戦略。
-このリンク https://www.redhat.com/en/services/training/managing-virtual-machines-red-hat-openshift-virtualization-exam[here^] をクリックして確認してください。
+https://www.redhat.com/en/services/training/managing-virtual-machines-red-hat-openshift-virtualization-exam[このリンク^] をクリックして確認してください。
 
 === Red Hat Learning Services: AU374 Red Hat Ansible Automation Platform を使用した高度な自動化の開発
 
@@ -45,4 +45,4 @@ image::conclusion/00_Thank_You.png[link=self, window=blank, width=100%]
 * Red Hat Ansible Automation Platform の高度な機能を使用して、フィルターやプラグインなどのデータを操作する。
 * ローリングアップデートとして自動化操作を実行する。
 * 自動化コードを実行するために必要な依存関係をバンドルおよび配布するための自動化実行環境を作成する。
-このリンク https://www.redhat.com/en/services/training/au374-developing-advanced-automation-red-hat-ansible-automation-platform[here^] をクリックして確認してください。
+https://www.redhat.com/en/services/training/au374-developing-advanced-automation-red-hat-ansible-automation-platform[このリンク^] をクリックして確認してください。
